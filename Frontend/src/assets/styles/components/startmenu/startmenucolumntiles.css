@@ -1,0 +1,102 @@
+/* Column 3 - Tiles */
+.tiles-container {
+  grid-column: 3;
+  display: flex;
+  flex-direction: column;
+  padding: 0px;
+  overflow-y: auto; /* Enable scrolling for the third column */
+  grid-row: 1 / span 2; /* Span both rows */
+  height: 100%; /* Ensure the column takes the full height */
+  z-index: 1;
+}
+
+.productivity,
+.explore {
+  margin-bottom: 10px; /* Add some space between productivity and explore sections */
+  flex-grow: 1; /* Take up remaining space */
+}
+
+.productivity-header,
+.explore-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Align text to the left */
+  height: auto;
+}
+
+.productivity-header h3,
+.explore-header h3 {
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.blank-space {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  grid-template-rows: repeat(2, 1fr); /* 2 rows */
+  gap: 5px; /* Equal spacing between tiles */
+  justify-content: space-between; /* Ensure even horizontal spacing */
+}
+
+.tile {
+  background-color: #353535; /* Tile background color */
+  width: 100%; /* Ensure tiles take up the full column width */
+  padding-top: 100%; /* Use padding to maintain square aspect ratio */
+  position: relative; /* Required for absolute positioning */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: white;
+  box-sizing: border-box;
+}
+
+.tile::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px solid transparent;
+  box-sizing: border-box;
+}
+
+.tile:hover::before {
+  border-color: #ffffff; /* Add border on hover */
+}
+
+.tile.click-effect::before {
+  border-color: transparent; /* Hide border on click */
+}
+
+.tile-content {
+  position: absolute; /* Position content absolutely */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center; /* Center the text */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%; /* Ensure it takes up full tile height */
+  width: 100%; /* Ensure it takes up full tile width */
+}
+
+.tile img {
+  width: 40%; /* Adjust icon size to scale with the tile */
+  height: auto; /* Maintain aspect ratio */
+  margin-bottom: 5px; /* Space between icon and text */
+}
+
+.tile-text {
+  position: absolute; /* Position text absolutely */
+  bottom: 1vh; /* Position text at the bottom */
+  left: 1vh; /* Position text at the left */
+  font-size: 12px; /* Adjust text size */
+}
+
+.click-effect {
+  border: none !important;
+}

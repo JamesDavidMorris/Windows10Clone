@@ -1,0 +1,77 @@
+/* Sliding window styles */
+.sliding-window {
+  position: absolute; /* Use absolute positioning */
+  top: 0;
+  left: calc(100% - 1fr); /* Start off-screen to the right of the left column */
+  transform: translateX(-100%); /* Initially hidden off-screen to the right */
+  width: 12vw; /* Adjust width as needed */
+  height: 100%; /* Inherit height from the parent container */
+  background-color: #2c2c2c;
+  color: white;
+  transition: transform 0.15s ease-in-out, opacity 0.25s ease-in-out; /* Smooth transition for sliding */
+  z-index: 4;
+  padding: 20px; /* Adjust padding as needed */
+  box-shadow: 5px 0 5px rgba(0, 0, 0, 0.25); /* Optional shadow for effect */
+  opacity: 0;
+  overflow: visible; /* Ensure children are visible */
+}
+
+.sliding-window.show {
+  transform: translateX(0%); /* Slide out to overlay the second column */
+  opacity: 1;
+}
+
+.sliding-window-content {
+  /* Styles for the content inside the sliding window */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Align items to the top */
+  height: 100%;
+  position: relative; /* Position relative for absolute children */
+  overflow: visible; /* Ensure children are visible */
+}
+
+.sliding-window-content p {
+  font-size: 1em;
+  text-align: left;
+  margin: 0; /* Remove default margin */
+  position: absolute; /* Position absolutely */
+  white-space: nowrap;
+  transform: translateY(2.3vh);
+  padding-left: 3.5vh;
+}
+
+.sliding-window-content .start {
+  font-size: 1.2em;
+  font-weight: bold;
+  transform: translateY(0vh);
+  padding-left: 3.5vh;
+}
+
+/* Hover background effect */
+.hover-background {
+  position: absolute;
+  left: -20px;
+  width: 100%; /* Match the width of the sliding window */
+  height: 7%; /* Adjust height as needed */
+  background-color: rgba(255, 255, 255, 0.1); /* Brighter background for hover effect */
+  z-index: 1; /* Ensure it is behind the text */
+  pointer-events: auto; /* Ensure it does not block interactions */
+  transform: translateY(0.7vh);
+  opacity: 0; /* Initially hidden */
+}
+
+/* Specific adjustment for START hover background */
+.hover-background.START {
+  transform: translateY(-1.1vh);
+}
+
+/* Show hover background on hover */
+.hover-background.hovered {
+  opacity: 1; /* Show when hovered */
+}
+
+/* Brighter background on click */
+.hover-background:active {
+  background-color: rgba(255, 255, 255, 0.2); /* Brighter background on click */
+}

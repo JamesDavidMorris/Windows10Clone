@@ -1,0 +1,112 @@
+.taskbar {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #001621;
+  color: white;
+  height: 40px;
+  padding: 0;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 1;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  user-select: none;
+}
+
+.taskbar-left {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.start-button-background {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(25px + 1.4vw);
+  height: 100%;
+}
+
+.start-button-background:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.start-button-background:hover .start-logo {
+  color: #429ce3;
+}
+
+.start-button {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.start-logo {
+  width: 20px;
+  height: 20px;
+  color: white;
+  transition: color 0.1s ease;
+}
+
+.taskbar-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  height: 100%;
+}
+
+.system-tray {
+  display: flex;
+  align-items: center;
+  margin-right: 0px; /* Spacing between the system tray and the clock */
+  height: 100%;
+}
+
+.system-icon-background {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 100%;
+}
+
+.system-icon-background:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.system-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.clock-background {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 8px;
+}
+
+.clock-background:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.clock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: inherit;
+  font-size: 12px;
+  user-select: none;
+  color: inherit;
+}
+
+.clock div {
+  line-height: 1.4;
+}

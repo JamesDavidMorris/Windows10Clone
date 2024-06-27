@@ -1,0 +1,58 @@
+/* Column 1 - System */
+.start-menu-content .left-column {
+  position: relative; /* Required for absolute positioning of sliding window */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100%;
+  z-index: 5; /* Ensure icons are above the sliding menu */
+  pointer-events: none;
+}
+
+.left-column-top {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  width: 100%; /* Ensure the icon is centered horizontally within the column */
+  height: 45px; /* Fixed height to align with other elements */
+  position: relative; /* Needed for positioning the hover effect */
+  z-index: 5; /* Ensure top icon is above the hover backgrounds */
+  pointer-events: none;
+}
+
+.left-column-top .icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -2px; /* Move the container to the left */
+  margin-top: 1px; /* Move the icon by 1px */
+}
+
+.left-column-top img {
+  width: 0.9vw;
+  height: 0.9vw;
+}
+
+.left-column-bottom {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  flex-grow: 1;
+  flex-shrink: 0;
+}
+
+.left-column-bottom .icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -2px; /* Move the container to the left */
+}
+
+.left-column img {
+  width: 0.9vw;
+  height: 0.9vw;
+  margin: 2vh 0; /* Margin between the icons */
+}

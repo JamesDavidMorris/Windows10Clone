@@ -1,0 +1,22 @@
+.popup-menu {
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.popup-menu.visible {
+  display: flex;
+}
+
+.popup-menu-content {
+  padding: 10px;
+}
+
+.close-button {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}

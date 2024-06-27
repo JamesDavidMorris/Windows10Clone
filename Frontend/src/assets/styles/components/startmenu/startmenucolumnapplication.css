@@ -1,0 +1,87 @@
+/* Column 2 - Applications */
+.recently-added {
+  grid-column: 2;
+  font-size: 14px;
+  z-index: 1;
+}
+
+.recently-added {
+  padding: 10px;
+  overflow-y: auto; /* Enable scrolling for the third column */
+  grid-row: 1 / span 2; /* Span both rows */
+  height: 100%; /* Ensure the column takes the full height */
+}
+
+.recently-added:hover,
+.tiles-container:hover {
+  overflow-y: auto; /* Show scroll bar on hover */
+}
+
+.recently-added::-webkit-scrollbar,
+.tiles-container::-webkit-scrollbar {
+  width: 3px; /* Control the width of the scroll bar */
+}
+
+.recently-added::-webkit-scrollbar-thumb,
+.tiles-container::-webkit-scrollbar-thumb {
+  background-color: #555; /* Scroll bar thumb color */
+  border-radius: 10px; /* Round the scroll bar thumb */
+}
+
+.recently-added::-webkit-scrollbar-track,
+.tiles-container::-webkit-scrollbar-track {
+  background: #1f1f1f; /* Scroll bar track color */
+}
+
+.category {
+  display: flex;
+  align-items: center;
+  height: 1vw; /* Match the height of application items */
+}
+
+.category-inner {
+  width: 16px; /* Align the width with the application icons */
+  display: flex;
+  justify-content: center; /* Center the text horizontally */
+  align-items: center; /* Center the text vertically */
+}
+
+.application img {
+  width: 16px !important;
+  height: 16px !important;
+  padding-right: 10px; /* Offset the category text to the right */
+  transform: translateX(1px);
+}
+
+.application {
+  display: flex;
+  align-items: center;
+}
+
+.application span {
+  margin-top: 0px; /* Adjust this value to move the text up */
+}
+
+.category-hover-effect,
+.application-hover-effect {
+  position: relative;
+  left: -10px; /* Offset the hover effect to the left */
+  width: 98%; /* Increase the width of the hover effect */
+  padding-left: 15px; /* Ensure padding for content */
+  padding-top: 5px; /* Add padding to match application height */
+  padding-bottom: 5px; /* Add padding to match application height */
+}
+
+.category-hover-effect:hover,
+.application-hover-effect:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.category-hover-effect:active,
+.application-hover-effect:active {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.category-spacing {
+  margin-top: 15px; /* Add space above each category except the first one */
+}
