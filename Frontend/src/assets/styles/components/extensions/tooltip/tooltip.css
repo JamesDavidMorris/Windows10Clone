@@ -1,0 +1,13 @@
+.tooltip {
+  position: fixed;
+  background-color: #ffffff;
+  color: black;
+  padding: 1px 4px;
+  font-size: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  z-index: 1000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  user-select: none;
+  pointer-events: none;
+}

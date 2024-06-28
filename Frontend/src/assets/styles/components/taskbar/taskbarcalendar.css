@@ -1,0 +1,198 @@
+/* Main Container */
+.taskbar-calendar {
+  width: 19%;
+  height: 85vh;
+  background-color: #1f1f1f;
+  position: absolute;
+  right: 0px;
+  bottom: 40px;
+  z-index: 1000;
+  overflow: hidden;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Row 1 - Clock */
+.calendar-clock {
+  padding: 20px;
+  text-align: left;
+  border-bottom: 1px solid #4c4c4c;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+}
+
+.clock-time-container {
+  display: flex;
+  align-items: baseline;
+  grid-column: 1 / 3;
+  grid-row: 1 / 2;
+}
+
+.clock-time {
+  font-size: 2.6em;
+  font-weight: 300;
+  width: 6.5ch;
+}
+
+.clock-period {
+  font-size: 24px;
+  font-weight: 350;
+  color: #929292;
+  padding: 0 20px;
+  align-self: flex-end;
+}
+
+.clock-date {
+  font-size: 16px;
+  margin-top: 5px;
+  color: #a6d8ff;
+  grid-column: 1 / 3;
+  grid-row: 2 / 3;
+  justify-self: start;
+}
+
+/* Row 2 - Table */
+.calendar-body {
+  padding: 10px;
+  overflow: hidden;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-header-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: center;
+  padding-top: 10px; /* Space between header row and clock */
+  padding-bottom: 0px; /* Space between header row and table */
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  grid-column: span 2; /* Span across two columns */
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: visible; /* Allow overflow to be visible */
+}
+
+.calendar-header h3 {
+  font-size: 1em;
+  font-weight: 300;
+  padding: 0 10px;
+  margin: 0;
+}
+
+.calendar-arrows {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.calendar-arrow-up {
+  width: 16px;
+  height: 16px;
+}
+
+.calendar-arrow-down {
+  width: 16px;
+  height: 16px;
+  transform: rotate(180deg);
+}
+
+/* Default styles for the SVG arrows */
+.calendar-arrow-up, .calendar-arrow-down {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  color: #afafaf; /* Default color */
+  transition: fill 0.2s ease; /* Smooth transition */
+}
+
+/* Styles for when the arrow is clicked */
+.calendar-arrow-up.clicked, .calendar-arrow-down.clicked {
+  color: #ffffff; /* Color when clicked */
+}
+
+.calendar-table {
+  width: 100%;
+  flex-grow: 1;
+  border-collapse: separate;
+  border-spacing: 5px; /* Add spacing between cells */
+}
+
+.calendar-table th,
+.calendar-table td {
+  width: 14.28%; /* 100% divided by 7 days */
+  height: 50px;
+  text-align: center;
+  position: relative;
+  box-sizing: border-box; /* Ensure padding/border doesn't affect cell size */
+  border: 2px solid transparent; /* Ensure consistent cell size */
+}
+
+.calendar-table th {
+  font-weight: 300;
+}
+
+.calendar-table td:hover {
+  outline: 2px solid #555; /* Grey border on hover */
+  z-index: 0; /* Ensure hover effect is always under selection */
+}
+
+.calendar-table td.other-month {
+  color: #888;
+}
+
+.calendar-table td.today {
+  background-color: #0078d4; /* Solid blue background for today */
+  color: #fff;
+}
+
+.calendar-table td.selected {
+  outline: 2px solid #0078d4; /* Blue border for selected day */
+  background-color: #1f1f1f;
+  z-index: 1; /* Ensure selection is always above hover effect */
+}
+
+.calendar-table td.today.selected {
+  background-color: #0078d4;
+  padding: 2px;
+  background-clip: content-box;
+  z-index: 5;
+}
+
+/* Row 3 - Agenda */
+.calendar-agenda {
+  background-color: #f1f1f;
+  padding: 10px;
+  border-top: 1px solid #4c4c4c;
+  height: 30%; /* Adjusted size for the agenda section */
+}
+
+.agenda-header {
+  margin-bottom: 10px;
+}
+
+.agenda-body p {
+  margin-bottom: 10px;
+}
+
+.agenda-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #0078d4;
+  border: none;
+  color: #fff;
+  text-align: center;
+}
+
+.agenda-button:hover {
+  background-color: #005a9e;
+}

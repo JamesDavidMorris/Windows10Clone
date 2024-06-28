@@ -22,9 +22,9 @@ import {
 } from '../extensions/icons/icons';
 import '../../assets/styles/components/startmenu/startmenucolumnapplication.css';
 
-const StartMenuColumnApplication = ({ recentlyAddedItems }) => {
+const StartMenuColumnApplication = ({ recentlyAddedItems, recentlyAddedRef  }) => {
   return (
-    <div className="recently-added">
+    <div className="recently-added" ref={recentlyAddedRef}>
       {recentlyAddedItems.map((categoryItem, index) => (
         <div key={index}>
           <div className="category-hover-effect">

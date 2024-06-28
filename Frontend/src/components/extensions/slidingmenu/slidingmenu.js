@@ -1,7 +1,7 @@
 import React, { useEffect, useState, forwardRef } from 'react';
 import '../../../assets/styles/components/extensions/slidingmenu/slidingmenu.css';
 
-/* Helper function to calculate the offset position of an element */
+// Calculate the offset position of an element
 function getOffset(el) {
   let _x = 0;
   let _y = 0;
@@ -13,13 +13,13 @@ function getOffset(el) {
   return { top: _y, left: _x };
 }
 
-const SlidingMenu = forwardRef(({ iconData, iconRefs, onMouseEnter, onMouseLeave, isVisible }, ref) => {
+const SlidingMenu = forwardRef(({ iconData, iconRefs, onMouseEnter, onMouseLeave, isVisible, setIsVisible }, ref) => {
   const [positions, setPositions] = useState({});
   const [isTransitioned, setIsTransitioned] = useState(false);
   const [slidingWindowWidth, setSlidingWindowWidth] = useState(0);
   const [hoveredKey, setHoveredKey] = useState(null);
 
-  /* Retrieve the icon positions after a delay to ensure the elements are fully rendered */
+  // Retrieve the icon positions after a delay to ensure the elements are fully rendered
   useEffect(() => {
     if (isVisible && iconRefs) {
       const timer = setTimeout(() => {
@@ -37,14 +37,14 @@ const SlidingMenu = forwardRef(({ iconData, iconRefs, onMouseEnter, onMouseLeave
     }
   }, [isVisible, iconRefs]);
 
-  /* Set the width of the sliding window */
+  // Set the width of the sliding window
   useEffect(() => {
     if (ref.current) {
       setSlidingWindowWidth(ref.current.offsetWidth);
     }
   }, [ref, isVisible]);
 
-  /* Get the display text for each icon */
+  // Get the display text for each icon
   const getTextForIcon = (name) => {
     switch (name) {
       case 'START':
@@ -64,7 +64,7 @@ const SlidingMenu = forwardRef(({ iconData, iconRefs, onMouseEnter, onMouseLeave
     }
   };
 
-  /* Calculate the top position of the text relative to the start icon */
+  // Calculate the top position of the text relative to the start icon
   const renderTextPosition = (key) => {
     if (positions[key] && positions.start) {
       const offsetTop = positions[key].top - positions.start.top;
@@ -73,21 +73,28 @@ const SlidingMenu = forwardRef(({ iconData, iconRefs, onMouseEnter, onMouseLeave
     return '0';
   };
 
-  /* Handle the end of the transition */
+  // Handle the end of the transition
   const handleTransitionEnd = () => {
     setIsTransitioned(true);
   };
 
-  /* Handle hover background mouse enter */
+  // Handle hover background mouse enter
   const handleHoverBackgroundMouseEnter = (key) => {
     setHoveredKey(key);
     onMouseEnter();
   };
 
-  /* Handle hover background mouse leave */
+  // Handle hover background mouse leave
   const handleHoverBackgroundMouseLeave = () => {
     setHoveredKey(null);
     onMouseLeave();
+  };
+
+  // Handle hover background click
+  const handleHoverBackgroundClick = (key) => {
+    if (key === 'START') {
+      setIsVisible(false); // Directly set the visibility state to false
+    }
   };
 
   return (
@@ -107,6 +114,7 @@ const SlidingMenu = forwardRef(({ iconData, iconRefs, onMouseEnter, onMouseLeave
             style={{ top: renderTextPosition(key), width: `${slidingWindowWidth}px` }}
             onMouseEnter={() => handleHoverBackgroundMouseEnter(key)}
             onMouseLeave={handleHoverBackgroundMouseLeave}
+            onClick={() => handleHoverBackgroundClick(key)}
           />
         ))}
 

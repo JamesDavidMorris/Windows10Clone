@@ -6,6 +6,13 @@ import icon_system_documents from '../../../assets/images/icons/system/icon_syst
 import icon_system_profile_default from '../../../assets/images/icons/system/icon_system_profile_default_1.png';
 import icon_system_burger from '../../../assets/images/icons/system/icon_system_burger_1.png';
 import icon_system_download from '../../../assets/images/icons/system/icon_system_download_1.png';
+import icon_system_sound_max from '../../../assets/images/icons/system/icon_system_sound_max_1.png';
+import icon_system_network_connected from '../../../assets/images/icons/system/icon_system_network_connected_1.png';
+import icon_system_network_notconnected from '../../../assets/images/icons/system/icon_system_network_notconnected_1.png';
+import icon_system_tray_open from '../../../assets/images/icons/system/icon_system_tray_open_1.png';
+
+// Taskbar icons
+import icon_taskbar_calender_arrow from '../../../assets/images/icons/taskbar/calendar/icon_taskbar_calender_arrow_1.png';
 
 // Application Icons
 import icon_application_alarm from '../../../assets/images/icons/application/icon_application_alarm_1.png';
@@ -36,6 +43,11 @@ export {
   icon_system_profile_default,
   icon_system_burger,
   icon_system_download,
+  icon_system_sound_max,
+  icon_system_network_connected,
+  icon_system_network_notconnected,
+  icon_system_tray_open,
+  icon_taskbar_calender_arrow,
   icon_application_alarm,
   icon_application_calculator,
   icon_application_calendar,

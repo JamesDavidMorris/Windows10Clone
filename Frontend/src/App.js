@@ -1,13 +1,11 @@
 import React from 'react';
 import './assets/styles/app.css';
-import WallpaperDisplay from './components/wallpaper/wallpaperdisplay';
-import Taskbar from './components/taskbar/taskbar';
+import Desktop from './components/desktop/desktop';
 
 function App() {
   return (
     <div className="App">
-      <WallpaperDisplay />
-      <Taskbar />
+      <Desktop />
     </div>
   );
 }
