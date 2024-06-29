@@ -6,27 +6,32 @@ const ICON_TASKBAR_CALENDAR_ARROW = '/assets/images/icons/system/icon_system_arr
 
 const TaskbarCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [displayedMonth, setDisplayedMonth] = useState(currentDate.getMonth());
   const [displayedYear, setDisplayedYear] = useState(currentDate.getFullYear());
   const periodRef = useRef(null);
   const [selectedDate, setSelectedDate] = useState({ day: null, month: null, year: null });
   const [svgArrowContent, setSvgArrowContent] = useState('');
   const [activeMonth, setActiveMonth] = useState(currentDate.getMonth());
-  
+  const [monthChangedByArrow, setMonthChangedByArrow] = useState(false); // Track month change by arrows
+
+  // Effect to update the current date every second
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentDate(new Date());
     }, 1000);
 
+    // Set the position of the period indicator
     setPeriodPosition();
 
+    // Cleanup the timer when the component unmounts
     return () => clearInterval(timer);
   }, []);
 
+  // Effect to update the position of the period indicator when the current date changes
   useEffect(() => {
     setPeriodPosition();
   }, [currentDate]);
 
+  // Effect to fetch the SVG content for the arrow icons
   useEffect(() => {
     const fetchSVG = async () => {
       try {
@@ -40,6 +45,7 @@ const TaskbarCalendar = () => {
     fetchSVG();
   }, []);
 
+  // Function to set the position of the period indicator
   const setPeriodPosition = () => {
     if (periodRef.current) {
       const screenWidth = window.innerWidth;
@@ -48,42 +54,43 @@ const TaskbarCalendar = () => {
     }
   };
 
+  // Function to handle clicks on a day in the calendar
   const handleDayClick = (day, month, year) => {
     setSelectedDate({ day, month, year });
   };
 
+  // Function to handle clicks on the previous month arrow
   const handlePrevMonth = () => {
-    console.log('Prev Month. Displayed: ', displayedMonth, 'Active: ', activeMonth);
-    let newMonth = displayedMonth - 1;
-    let newYear = displayedYear;
+    setMonthChangedByArrow(true); // Indicate month change by arrows
+    const newMonth = activeMonth - 1;
+    const newYear = newMonth < 0 ? displayedYear - 1 : displayedYear;
+    const adjustedMonth = newMonth < 0 ? 11 : newMonth;
 
-    if (newMonth < 0) {
-      newMonth = 11;
-      newYear -= 1;
-    }
-
-    setDisplayedMonth(activeMonth - 1);
+    setActiveMonth(adjustedMonth);
     setDisplayedYear(newYear);
-    setActiveMonth(newMonth);
-    console.log('Prev Month Clicked: ', newMonth, newYear);
+
+    console.log('Prev Month Clicked: ', adjustedMonth, newYear);
   };
 
+  // Function to handle clicks on the next month arrow
   const handleNextMonth = () => {
-    console.log('Next Month. Displayed: ', displayedMonth, 'Active: ', activeMonth);
-    let newMonth = displayedMonth + 1;
-    let newYear = displayedYear;
+    setMonthChangedByArrow(true); // Indicate month change by arrows
+    const newMonth = activeMonth + 1;
+    const newYear = newMonth > 11 ? displayedYear + 1 : displayedYear;
+    const adjustedMonth = newMonth > 11 ? 0 : newMonth;
 
-    if (newMonth > 11) {
-      newMonth = 0;
-      newYear += 1;
-    }
-
-    setDisplayedMonth(activeMonth + 1);
+    setActiveMonth(adjustedMonth);
     setDisplayedYear(newYear);
-    setActiveMonth(newMonth);
-    console.log('Next Month Clicked: ', newMonth, newYear);
+
+    console.log('Next Month Clicked: ', adjustedMonth, newYear);
   };
 
+  // Effect to log state updates for debugging purposes
+  useEffect(() => {
+    console.log('State updated. Active:', activeMonth, 'Year:', displayedYear);
+  }, [activeMonth, displayedYear]);
+
+  // Function to handle clicks on the arrow buttons with a visual effect
   const handleArrowClick = (event) => {
     const target = event.currentTarget;
     target.classList.add('clicked');
@@ -92,8 +99,11 @@ const TaskbarCalendar = () => {
     }, 200);
   };
 
+  // Format the current time and period (AM/PM)
   const formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const period = currentDate.toLocaleTimeString([], { hour12: true }).slice(-2);
+
+  // Format the full date text and month/year text for the calendar header
   const fullDateText = currentDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const monthYearText = new Date(displayedYear, activeMonth).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
 
@@ -136,8 +146,10 @@ const TaskbarCalendar = () => {
           selectedDate={selectedDate}
           activeMonth={activeMonth}
           setActiveMonth={setActiveMonth}
-          displayedMonth={displayedMonth}
           displayedYear={displayedYear}
+          setDisplayedYear={setDisplayedYear}
+          setMonthChangedByArrow={setMonthChangedByArrow}
+          monthChangedByArrow={monthChangedByArrow}
         />
       </div>
       <div className="calendar-agenda">

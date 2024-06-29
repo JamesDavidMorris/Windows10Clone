@@ -1,9 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import '../../assets/styles/components/taskbar/taskbarcalendar.css';
 
 const generateCalendarWeeks = (startYear, startMonth, monthsToGenerate) => {
+  console.log('generateCalendarWeeks called with:', { startYear, startMonth, monthsToGenerate });
+  if (startYear === undefined || startMonth === undefined || monthsToGenerate === undefined) {
+    console.error('generateCalendarWeeks received invalid arguments', { startYear, startMonth, monthsToGenerate });
+    return [];
+  }
+
   const weeks = [];
 
+  // Loop through the months to generate weeks
   for (let i = -monthsToGenerate; i <= monthsToGenerate; i++) {
     const month = startMonth + i;
     const year = startYear + Math.floor(month / 12);
@@ -69,24 +76,59 @@ const generateCalendarWeeks = (startYear, startMonth, monthsToGenerate) => {
   return cleanedWeeks;
 };
 
-const TaskbarCalendarGrid = ({ currentDate, handleDayClick, selectedDate, activeMonth, setActiveMonth, displayedMonth, displayedYear }) => {
+const TaskbarCalendarGrid = ({
+  currentDate,
+  handleDayClick,
+  selectedDate,
+  activeMonth,
+  setActiveMonth,
+  displayedYear,
+  setDisplayedYear,
+  setMonthChangedByArrow,
+  monthChangedByArrow
+}) => {
   const [calendarWeeks, setCalendarWeeks] = useState([]);
   const [weekIndex, setWeekIndex] = useState(0);
+  const isInitialRender = useRef(true);
+  const [shouldRegenerate, setShouldRegenerate] = useState(false); // Track if we should regenerate weeks
+  const wheelEventRef = useRef(0); // Reference to track wheel event timing
 
+  // Function to update the calendar weeks based on the current year and active month
+  const updateCalendarWeeks = () => {
+    if (displayedYear !== undefined && activeMonth !== undefined) {
+      const weeks = generateCalendarWeeks(displayedYear, activeMonth, 6);
+      setCalendarWeeks(weeks);
+      const initialIndex = weeks.findIndex(week => week.some(day => day.month === activeMonth && day.year === displayedYear));
+      setWeekIndex(initialIndex);
+    }
+  };
+
+  // Effect to update calendar weeks when monthChangedByArrow or displayedYear changes
   useEffect(() => {
-    const weeks = generateCalendarWeeks(displayedYear, displayedMonth, 6);
-    setCalendarWeeks(weeks);
-    const initialIndex = weeks.findIndex(week => week.some(day => day.month === displayedMonth && day.year === displayedYear));
-    setWeekIndex(initialIndex);
-  }, [displayedMonth, displayedYear]);
+    updateCalendarWeeks();
+  }, [monthChangedByArrow, displayedYear]);
 
+  // Effect to update the active month and year based on weekIndex and calendarWeeks changes
   useEffect(() => {
-    updateActiveMonth();
-  }, [weekIndex, calendarWeeks, activeMonth]);
+    if (!isInitialRender.current) {
+      updateActiveMonthAndYear();
+    }
+    isInitialRender.current = false;
+  }, [weekIndex, calendarWeeks]);
 
-  const updateActiveMonth = () => {
+  // Trigger calendar weeks regeneration when needed
+  useEffect(() => {
+    if (shouldRegenerate) {
+      updateCalendarWeeks();
+      setShouldRegenerate(false);
+    }
+  }, [shouldRegenerate]);
+
+  // Function to update the active month and displayed year based on the current weeks in view
+  const updateActiveMonthAndYear = () => {
     const weeksToDisplay = calendarWeeks.slice(weekIndex, weekIndex + 6);
     const monthCounts = {};
+    const yearCounts = {};
 
     weeksToDisplay.forEach(week => {
       week.forEach(day => {
@@ -95,14 +137,37 @@ const TaskbarCalendarGrid = ({ currentDate, handleDayClick, selectedDate, active
         } else {
           monthCounts[day.month] = 1;
         }
+
+        if (yearCounts[day.year]) {
+          yearCounts[day.year]++;
+        } else {
+          yearCounts[day.year] = 1;
+        }
       });
     });
 
     const newActiveMonth = Object.keys(monthCounts).reduce((a, b) => monthCounts[a] > monthCounts[b] ? a : b, null);
-    setActiveMonth(Number(newActiveMonth));
-    console.log('Active Month:', newActiveMonth);
+    const newDisplayedYear = Object.keys(yearCounts).reduce((a, b) => yearCounts[a] > yearCounts[b] ? a : b, null);
+
+    // Only update activeMonth if it has changed
+    if (Number(newActiveMonth) !== activeMonth) {
+      setActiveMonth(Number(newActiveMonth));
+    }
+
+    // Only update displayedYear if it has changed
+    if (Number(newDisplayedYear) !== displayedYear) {
+      setDisplayedYear(Number(newDisplayedYear));
+    }
+
+    // Only update monthChangedByArrow if it has changed
+    if (setMonthChangedByArrow) {
+      setMonthChangedByArrow(false);
+    }
+
+    console.log('Active Month:', newActiveMonth, 'Displayed Year:', newDisplayedYear);
   };
 
+  // Function to render each day cell in the calendar
   const renderDay = (day, month, year) => {
     const isToday = month === currentDate.getMonth() && year === currentDate.getFullYear() && day === currentDate.getDate();
     const isSelected = day === selectedDate.day && month === selectedDate.month && year === selectedDate.year;
@@ -120,6 +185,7 @@ const TaskbarCalendarGrid = ({ currentDate, handleDayClick, selectedDate, active
     );
   };
 
+  // Function to render the calendar weeks
   const renderCalendar = () => {
     const endIndex = weekIndex + 6; // Display 6 weeks
     const weeksToDisplay = calendarWeeks.slice(weekIndex, endIndex);
@@ -133,20 +199,36 @@ const TaskbarCalendarGrid = ({ currentDate, handleDayClick, selectedDate, active
     return rows;
   };
 
+  // Event handler for mouse wheel scrolling
   const handleWheel = (event) => {
     const delta = event.deltaY;
     const maxWeeks = Math.max(calendarWeeks.length - 6, 0);
+    const now = Date.now();
 
-    if (delta < 0) {
-      setWeekIndex(prev => {
-        const newIndex = Math.max(prev - 1, 0);
-        return newIndex;
-      });
-    } else if (delta > 0) {
-      setWeekIndex(prev => {
-        const newIndex = Math.min(prev + 1, maxWeeks);
-        return newIndex;
-      });
+    // Debounce the wheel events to handle rapid scrolling
+    if (now - wheelEventRef.current > 25) {
+      wheelEventRef.current = now;
+      if (delta < 0) {
+        setWeekIndex(prev => {
+          const newIndex = Math.max(prev - 1, 0);
+          
+          // Trigger regeneration if the first week is in view and we're scrolling up
+          if (newIndex === 0 && calendarWeeks[0][0].day === 1) {
+            setShouldRegenerate(true);
+          }
+          return newIndex;
+        });
+      } else if (delta > 0) {
+        setWeekIndex(prev => {
+          const newIndex = Math.min(prev + 1, maxWeeks);
+
+          // Trigger regeneration if the last week is in view and we're scrolling down
+          if (newIndex === maxWeeks && calendarWeeks[maxWeeks][0].day !== 1) {
+            setShouldRegenerate(true);
+          }
+          return newIndex;
+        });
+      }
     }
   };
 
@@ -172,4 +254,5 @@ const TaskbarCalendarGrid = ({ currentDate, handleDayClick, selectedDate, active
   );
 };
 
+export { generateCalendarWeeks };
 export default TaskbarCalendarGrid;
