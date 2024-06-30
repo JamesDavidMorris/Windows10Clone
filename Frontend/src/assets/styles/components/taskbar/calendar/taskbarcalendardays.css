@@ -1,0 +1,85 @@
+.calendar-grid {
+  overflow: hidden;
+  position: relative;
+}
+
+/* Container for Date Cells */
+.calendar-table-container {
+  overflow: hidden;
+  position: relative;
+  height: calc(50px * 7);
+}
+
+.calendar-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 5px; /* Add spacing between cells */
+  transform: translateY(-50px);
+}
+
+.calendar-table.slide-up {
+  animation: slide-up 0.1s forwards;
+}
+
+.calendar-table.slide-down {
+  animation: slide-down 0.1s forwards;
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(-50px);
+  }
+  100% {
+    transform: translateY(5px);
+  }
+}
+
+@keyframes slide-down {
+  0% {
+    transform: translateY(-50px);
+  }
+  100% {
+    transform: translateY(-105px);
+  }
+}
+
+.calendar-table.no-transition {
+  transition: none !important;
+}
+
+.calendar-table th,
+.calendar-table td {
+  width: 14.28%; /* 100% divided by 7 days */
+  height: 50px;
+  text-align: center;
+  position: relative;
+  box-sizing: border-box; /* Ensure padding/border doesn't affect cell size */
+  border: 2px solid transparent; /* Ensure consistent cell size */
+}
+
+.calendar-table td:hover {
+  outline: 2px solid #555; /* Grey border on hover */
+  z-index: 0; /* Ensure hover effect is always under selection */
+}
+
+.calendar-table td.other-month {
+  color: #888;
+}
+
+.calendar-table td.today {
+  background-color: #0078d4; /* Solid blue background for today */
+  color: #fff;
+}
+
+.calendar-table td.selected {
+  outline: 2px solid #0078d4; /* Blue border for selected day */
+  background-color: #1f1f1f;
+  z-index: 1; /* Ensure selection is always above hover effect */
+}
+
+.calendar-table td.today.selected {
+  background-color: #0078d4;
+  padding: 2px;
+  background-clip: content-box;
+  z-index: 5;
+}

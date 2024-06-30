@@ -1,0 +1,57 @@
+.calendar-months {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 10px;
+  padding: 0px;
+  background-color: #1f1f1f;
+  color: #fff;
+  height: calc(50px * 7); /* Set height to match calendar-days */
+  margin-top: 25px;
+  margin-bottom: 26px;
+}
+
+.calendar-month {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1f1f1f;
+  cursor: pointer;
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  border: 2px solid transparent;
+}
+
+.calendar-month span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.calendar-month:hover {
+  outline: 2px solid grey; /* Grey border on hover */
+  z-index: 0; /* Ensure hover effect is always under selection */
+}
+
+.calendar-month.current-month {
+  border: 2px solid #0078d4; /* Blue border for current month */
+  background-color: #0078d4; /* Background color for current month */
+  color: #fff; /* Text color for current month */
+}
+
+.calendar-month.current-month:hover {
+  outline: 2px solid #66aee7; /* Grey border on hover */
+  border: 2px solid #0078d4; /* Blue border for current month */
+  background-color: #0078d4; /* Background color for current month */
+  color: #fff; /* Text color for current month */
+}
+
+.calendar-month.current-month span {
+  color: #fff; /* Text color for current month */
+}
+
+.calendar-month.non-current-year {
+  color: #888; /* Gray text for non-current year months */
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
-import '../../assets/styles/components/taskbar/taskbarcalendar.css';
+import '../../../assets/styles/components/taskbar/calendar/taskbarcalendardays.css';
 
 const generateCalendarWeeks = (startYear, startMonth, monthsToGenerate) => {
   const weeks = [];
@@ -68,7 +68,7 @@ const generateCalendarWeeks = (startYear, startMonth, monthsToGenerate) => {
   );
 };
 
-const TaskbarCalendarGrid = ({
+const TaskbarCalendarDays = ({
   currentDate,
   handleDayClick,
   selectedDate,
@@ -208,7 +208,7 @@ const TaskbarCalendarGrid = ({
               const newIndex = Math.max(prev - 1, 0); // Decrease the week index by 1 but ensure it doesn't go below 0
 
               // Trigger regeneration if the first week is in view and we're scrolling up
-              if (newIndex === 0 && calendarWeeks[0][0].day === 1) {
+              if (newIndex === 0) {
                 setShouldRegenerate(true);
               }
 
@@ -229,7 +229,7 @@ const TaskbarCalendarGrid = ({
               const newIndex = Math.min(prev + 1, maxWeeks); // Increase the week index by 1 but ensure it doesn't exceed maxWeeks
 
               // Trigger regeneration if the last week is in view and we're scrolling down
-              if (newIndex === maxWeeks && calendarWeeks[maxWeeks][0].day !== 1) {
+              if (newIndex === maxWeeks) {
                 setShouldRegenerate(true);
               }
 
@@ -264,4 +264,4 @@ const TaskbarCalendarGrid = ({
 };
 
 export { generateCalendarWeeks };
-export default TaskbarCalendarGrid;
+export default TaskbarCalendarDays;

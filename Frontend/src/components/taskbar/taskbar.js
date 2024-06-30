@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Tooltip from '../extensions/tooltip/tooltip';
-import TaskbarCalendar from './taskbarcalendar';
+import TaskbarCalendar from './calendar/taskbarcalendar';
 
 import '../../assets/styles/components/taskbar/taskbar.css';
 import '../../assets/styles/components/extensions/tooltip/tooltip.css';
