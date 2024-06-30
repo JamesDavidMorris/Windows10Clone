@@ -9,8 +9,8 @@
   z-index: 1000;
   overflow: hidden;
   color: #fff;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
 }
 
 /* Row 1 - Clock */
@@ -119,11 +119,66 @@
   color: #ffffff; /* Color when clicked */
 }
 
+/* Header Row for Days of the Week */
+.calendar-table-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding-bottom: 10px; /* Space between header row and date cells */
+  text-align: center;
+  margin-top: 20px;
+}
+
+.calendar-table-header div {
+  font-weight: 300;
+}
+
+.calendar-grid {
+  overflow: hidden;
+  position: relative;
+}
+
+/* Container for Date Cells */
+.calendar-table-container {
+  overflow: hidden;
+  position: relative;
+  height: calc(50px * 7);
+}
+
 .calendar-table {
   width: 100%;
-  flex-grow: 1;
   border-collapse: separate;
   border-spacing: 5px; /* Add spacing between cells */
+  transform: translateY(-50px);
+}
+
+.calendar-table.slide-up {
+  animation: slide-up 0.1s forwards;
+}
+
+.calendar-table.slide-down {
+  animation: slide-down 0.1s forwards;
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(-50px);
+  }
+  100% {
+    transform: translateY(5px);
+  }
+}
+
+@keyframes slide-down {
+  0% {
+    transform: translateY(-50px);
+  }
+  100% {
+    transform: translateY(-105px);
+  }
+}
+
+.calendar-table.no-transition {
+  transition: none !important;
 }
 
 .calendar-table th,
@@ -134,10 +189,6 @@
   position: relative;
   box-sizing: border-box; /* Ensure padding/border doesn't affect cell size */
   border: 2px solid transparent; /* Ensure consistent cell size */
-}
-
-.calendar-table th {
-  font-weight: 300;
 }
 
 .calendar-table td:hover {
@@ -172,7 +223,8 @@
   background-color: #f1f1f;
   padding: 10px;
   border-top: 1px solid #4c4c4c;
-  height: 30%; /* Adjusted size for the agenda section */
+  display: flex;
+  flex-direction: column;
 }
 
 .agenda-header {

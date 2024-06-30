@@ -1,13 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { unstable_batchedUpdates } from 'react-dom';
 import '../../assets/styles/components/taskbar/taskbarcalendar.css';
 
 const generateCalendarWeeks = (startYear, startMonth, monthsToGenerate) => {
-  console.log('generateCalendarWeeks called with:', { startYear, startMonth, monthsToGenerate });
-  if (startYear === undefined || startMonth === undefined || monthsToGenerate === undefined) {
-    console.error('generateCalendarWeeks received invalid arguments', { startYear, startMonth, monthsToGenerate });
-    return [];
-  }
-
   const weeks = [];
 
   // Loop through the months to generate weeks
@@ -15,7 +10,6 @@ const generateCalendarWeeks = (startYear, startMonth, monthsToGenerate) => {
     const month = startMonth + i;
     const year = startYear + Math.floor(month / 12);
     const adjustedMonth = (month + 12) % 12;
-
     const daysInMonth = new Date(year, adjustedMonth + 1, 0).getDate();
     const startDayOfWeek = new Date(year, adjustedMonth, 1).getDay();
     const daysInPreviousMonth = new Date(year, adjustedMonth, 0).getDate();
@@ -69,11 +63,9 @@ const generateCalendarWeeks = (startYear, startMonth, monthsToGenerate) => {
   }
 
   // Ensure each week has exactly 7 days and fix any reverse order issues
-  const cleanedWeeks = weeks.filter(week => week.length === 7).map(week => {
-    return week.sort((a, b) => a.year === b.year ? (a.month === b.month ? a.day - b.day : a.month - b.month) : a.year - b.year);
-  });
-
-  return cleanedWeeks;
+  return weeks.filter((week) => week.length === 7).map((week) =>
+    week.sort((a, b) => (a.year === b.year ? (a.month === b.month ? a.day - b.day : a.month - b.month) : a.year - b.year))
+  );
 };
 
 const TaskbarCalendarGrid = ({
@@ -85,20 +77,22 @@ const TaskbarCalendarGrid = ({
   displayedYear,
   setDisplayedYear,
   setMonthChangedByArrow,
-  monthChangedByArrow
+  monthChangedByArrow,
 }) => {
   const [calendarWeeks, setCalendarWeeks] = useState([]);
   const [weekIndex, setWeekIndex] = useState(0);
+  const [transitionClass, setTransitionClass] = useState('');
   const isInitialRender = useRef(true);
   const [shouldRegenerate, setShouldRegenerate] = useState(false); // Track if we should regenerate weeks
-  const wheelEventRef = useRef(0); // Reference to track wheel event timing
+  const wheelEventRef = useRef(0);
+  const tableRef = useRef(null);
 
   // Function to update the calendar weeks based on the current year and active month
   const updateCalendarWeeks = () => {
     if (displayedYear !== undefined && activeMonth !== undefined) {
       const weeks = generateCalendarWeeks(displayedYear, activeMonth, 6);
       setCalendarWeeks(weeks);
-      const initialIndex = weeks.findIndex(week => week.some(day => day.month === activeMonth && day.year === displayedYear));
+      const initialIndex = weeks.findIndex((week) => week.some((day) => day.month === activeMonth && day.year === displayedYear));
       setWeekIndex(initialIndex);
     }
   };
@@ -130,14 +124,13 @@ const TaskbarCalendarGrid = ({
     const monthCounts = {};
     const yearCounts = {};
 
-    weeksToDisplay.forEach(week => {
-      week.forEach(day => {
+    weeksToDisplay.forEach((week) => {
+      week.forEach((day) => {
         if (monthCounts[day.month]) {
           monthCounts[day.month]++;
         } else {
           monthCounts[day.month] = 1;
         }
-
         if (yearCounts[day.year]) {
           yearCounts[day.year]++;
         } else {
@@ -146,8 +139,8 @@ const TaskbarCalendarGrid = ({
       });
     });
 
-    const newActiveMonth = Object.keys(monthCounts).reduce((a, b) => monthCounts[a] > monthCounts[b] ? a : b, null);
-    const newDisplayedYear = Object.keys(yearCounts).reduce((a, b) => yearCounts[a] > yearCounts[b] ? a : b, null);
+    const newActiveMonth = Object.keys(monthCounts).reduce((a, b) => (monthCounts[a] > monthCounts[b] ? a : b), null);
+    const newDisplayedYear = Object.keys(yearCounts).reduce((a, b) => (yearCounts[a] > yearCounts[b] ? a : b), null);
 
     // Only update activeMonth if it has changed
     if (Number(newActiveMonth) !== activeMonth) {
@@ -163,8 +156,6 @@ const TaskbarCalendarGrid = ({
     if (setMonthChangedByArrow) {
       setMonthChangedByArrow(false);
     }
-
-    console.log('Active Month:', newActiveMonth, 'Displayed Year:', newDisplayedYear);
   };
 
   // Function to render each day cell in the calendar
@@ -175,11 +166,7 @@ const TaskbarCalendarGrid = ({
     const className = `${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''} ${isActiveMonth ? '' : 'other-month'}`;
 
     return (
-      <td
-        key={`${day}-${month}-${year}`}
-        onClick={() => handleDayClick(day, month, year)}
-        className={className}
-      >
+      <td key={`${day}-${month}-${year}`} onClick={() => handleDayClick(day, month, year)} className={className}>
         {day}
       </td>
     );
@@ -187,8 +174,9 @@ const TaskbarCalendarGrid = ({
 
   // Function to render the calendar weeks
   const renderCalendar = () => {
-    const endIndex = weekIndex + 6; // Display 6 weeks
-    const weeksToDisplay = calendarWeeks.slice(weekIndex, endIndex);
+    const startIndex = Math.max(weekIndex - 1, 0);
+    const endIndex = weekIndex + 6 + 1;
+    const weeksToDisplay = calendarWeeks.slice(startIndex, endIndex);
 
     const rows = [];
     weeksToDisplay.forEach((week, i) => {
@@ -201,55 +189,76 @@ const TaskbarCalendarGrid = ({
 
   // Event handler for mouse wheel scrolling
   const handleWheel = (event) => {
-    const delta = event.deltaY;
-    const maxWeeks = Math.max(calendarWeeks.length - 6, 0);
-    const now = Date.now();
+    const delta = event.deltaY; // Determine scroll direction
+    const maxWeeks = Math.max(calendarWeeks.length - 6, 0); // Calculate the maximum number of weeks that can be displayed
+    const now = Date.now(); // Get the current timestamp
 
-    // Debounce the wheel events to handle rapid scrolling
-    if (now - wheelEventRef.current > 25) {
-      wheelEventRef.current = now;
-      if (delta < 0) {
-        setWeekIndex(prev => {
-          const newIndex = Math.max(prev - 1, 0);
-          
-          // Trigger regeneration if the first week is in view and we're scrolling up
-          if (newIndex === 0 && calendarWeeks[0][0].day === 1) {
-            setShouldRegenerate(true);
-          }
-          return newIndex;
-        });
-      } else if (delta > 0) {
-        setWeekIndex(prev => {
-          const newIndex = Math.min(prev + 1, maxWeeks);
+    // Check if the last wheel event was more than 50ms ago to debounce rapid scrolling
+    if (now - wheelEventRef.current > 50) {
+      wheelEventRef.current = now; // Update the timestamp of the last wheel event
 
-          // Trigger regeneration if the last week is in view and we're scrolling down
-          if (newIndex === maxWeeks && calendarWeeks[maxWeeks][0].day !== 1) {
-            setShouldRegenerate(true);
-          }
-          return newIndex;
-        });
+      // Handle scrolling up (previous week)
+      if (delta < 0 && weekIndex > 0) {
+        setTransitionClass('slide-up'); // Apply the slide-up animation
+
+        // After the animation completes, update the week index and reset the animation
+        setTimeout(() => {
+          unstable_batchedUpdates(() => {
+            setWeekIndex((prev) => {
+              const newIndex = Math.max(prev - 1, 0); // Decrease the week index by 1 but ensure it doesn't go below 0
+
+              // Trigger regeneration if the first week is in view and we're scrolling up
+              if (newIndex === 0 && calendarWeeks[0][0].day === 1) {
+                setShouldRegenerate(true);
+              }
+
+              return newIndex;
+            });
+
+            setTransitionClass('');
+          });
+        }, 50);
+      // Handle scrolling down (next week)
+      } else if (delta > 0 && weekIndex < maxWeeks) {
+        setTransitionClass('slide-down'); // Apply the slide-down animation
+
+        // After the animation completes, update the week index and reset the animation
+        setTimeout(() => {
+          unstable_batchedUpdates(() => {
+            setWeekIndex((prev) => {
+              const newIndex = Math.min(prev + 1, maxWeeks); // Increase the week index by 1 but ensure it doesn't exceed maxWeeks
+
+              // Trigger regeneration if the last week is in view and we're scrolling down
+              if (newIndex === maxWeeks && calendarWeeks[maxWeeks][0].day !== 1) {
+                setShouldRegenerate(true);
+              }
+
+              return newIndex;
+            });
+
+            setTransitionClass('');
+          });
+        }, 50);
       }
     }
   };
 
   return (
     <div className="calendar-grid" onWheel={handleWheel}>
-      <table className="calendar-table">
-        <thead>
-          <tr>
-            <th>Su</th>
-            <th>Mo</th>
-            <th>Tu</th>
-            <th>We</th>
-            <th>Th</th>
-            <th>Fr</th>
-            <th>Sa</th>
-          </tr>
-        </thead>
-        <tbody>
-          {renderCalendar()}
-        </tbody>
-      </table>
+      <div className="calendar-table-header">
+        <div>Su</div>
+        <div>Mo</div>
+        <div>Tu</div>
+        <div>We</div>
+        <div>Th</div>
+        <div>Fr</div>
+        <div>Sa</div>
+      </div>
+      <div className="calendar-table-container">
+        <table className={`calendar-table ${transitionClass}`} ref={tableRef}>
+          <tbody>{renderCalendar()}</tbody>
+        </table>
+      </div>
     </div>
   );
 };
