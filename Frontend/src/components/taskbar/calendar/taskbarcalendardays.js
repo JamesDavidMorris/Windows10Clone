@@ -199,7 +199,7 @@ const TaskbarCalendarDays = ({
 
       // Handle scrolling up (previous week)
       if (delta < 0 && weekIndex > 0) {
-        setTransitionClass('slide-up'); // Apply the slide-up animation
+        setTransitionClass('days-slide-up'); // Apply the slide-up animation
 
         // After the animation completes, update the week index and reset the animation
         setTimeout(() => {
@@ -217,10 +217,10 @@ const TaskbarCalendarDays = ({
 
             setTransitionClass('');
           });
-        }, 50);
+        }, 100);
       // Handle scrolling down (next week)
       } else if (delta > 0 && weekIndex < maxWeeks) {
-        setTransitionClass('slide-down'); // Apply the slide-down animation
+        setTransitionClass('days-slide-down'); // Apply the slide-down animation
 
         // After the animation completes, update the week index and reset the animation
         setTimeout(() => {
@@ -238,7 +238,7 @@ const TaskbarCalendarDays = ({
 
             setTransitionClass('');
           });
-        }, 50);
+        }, 100);
       }
     }
   };

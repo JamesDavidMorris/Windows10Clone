@@ -185,11 +185,11 @@ const TaskbarCalendar = () => {
           <TaskbarCalendarMonths
             setActiveMonth={setActiveMonth}
             setDisplayedYear={setDisplayedYear}
-            displayedYear={displayedYear} // Pass displayedYear as a prop
+            displayedYear={displayedYear}
             setShowDaysView={setShowDaysView}
             setShowMonthsView={setShowMonthsView}
-            currentYear={currentYear} // Pass currentYear as a prop
-            currentMonth={currentMonth} // Pass currentMonth as a prop
+            currentYear={currentYear}
+            currentMonth={currentMonth}
           />
         ) : null}
       </div>

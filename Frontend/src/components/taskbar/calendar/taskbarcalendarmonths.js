@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { unstable_batchedUpdates } from 'react-dom';
 import '../../../assets/styles/components/taskbar/calendar/taskbarcalendarmonths.css';
 
 const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear, setShowDaysView, setShowMonthsView, currentYear, currentMonth }) => {
@@ -12,6 +13,7 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
   const [baseYear, setBaseYear] = useState(displayedYear);
   const wheelEventRef = useRef(0);
   const yearChangedRef = useRef(false);
+  const [transitionClass, setTransitionClass] = useState('');
 
   const handleMonthClick = (monthIndex, year) => {
     setActiveMonth(monthIndex);
@@ -24,21 +26,33 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
     const delta = event.deltaY;
     const now = Date.now();
 
-    if (now - wheelEventRef.current > 50) {
+    if (now - wheelEventRef.current > 100) {
       wheelEventRef.current = now;
 
       if (delta < 0) {
-        setStartIndex((prev) => (prev - 4 + months.length) % months.length);
-        if (startIndex <= 3) {
-          setBaseYear((prev) => prev - 1);
-          yearChangedRef.current = true;
-        }
+        setTransitionClass('slide-up');
+        setTimeout(() => {
+          unstable_batchedUpdates(() => {
+            setStartIndex((prev) => (prev - 4 + months.length) % months.length);
+            if (startIndex <= 3) {
+              setBaseYear((prev) => prev - 1);
+              yearChangedRef.current = true;
+            }
+            setTransitionClass('');
+          });
+        }, 100);
       } else if (delta > 0) {
-        setStartIndex((prev) => (prev + 4) % months.length);
-        if (startIndex >= months.length - 4) {
-          setBaseYear((prev) => prev + 1);
-          yearChangedRef.current = true;
-        }
+        setTransitionClass('slide-down');
+        setTimeout(() => {
+          unstable_batchedUpdates(() => {
+            setStartIndex((prev) => (prev + 4) % months.length);
+            if (startIndex >= months.length - 4) {
+              setBaseYear((prev) => prev + 1);
+              yearChangedRef.current = true;
+            }
+            setTransitionClass('');
+          });
+        }, 100);
       }
     }
   };
@@ -59,8 +73,8 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
 
   const getDisplayedMonths = () => {
     const displayedMonths = [];
-    for (let i = 0; i < 16; i++) {
-      const monthIndex = (startIndex + i) % months.length;
+    for (let i = -4; i < 20; i++) {  // Adjusted to add 2 extra rows, one above and one below
+      const monthIndex = (startIndex + i + months.length) % months.length;
       const yearOffset = Math.floor((startIndex + i) / months.length);
       displayedMonths.push({
         month: months[monthIndex],
@@ -72,7 +86,7 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
   };
 
   useEffect(() => {
-    const firstRowMonths = getDisplayedMonths().slice(0, 4);
+    const firstRowMonths = getDisplayedMonths().slice(4, 8); // Adjusted to the visible first row
     const lastJanuaryInFirstRow = firstRowMonths.find(item => item.month === 'Jan');
 
     if (lastJanuaryInFirstRow && yearChangedRef.current) {
@@ -82,16 +96,18 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
   }, [startIndex, baseYear]);
 
   return (
-    <div className="calendar-months">
-      {getDisplayedMonths().map((item, index) => (
-        <div
-          key={index}
-          className={`calendar-month ${item.monthIndex === currentMonth && item.year === currentYear ? 'current-month' : ''} ${item.year !== displayedYear ? 'non-current-year' : ''}`}
-          onClick={() => handleMonthClick(item.monthIndex, item.year)}
-        >
-          <span>{item.month}</span>
-        </div>
-      ))}
+    <div className="calendar-months-container">
+      <div className={`calendar-months ${transitionClass}`}>
+        {getDisplayedMonths().map((item, index) => (
+          <div
+            key={index}
+            className={`calendar-month ${item.monthIndex === currentMonth && item.year === currentYear ? 'current-month' : ''} ${item.year !== displayedYear ? 'non-current-year' : ''}`}
+            onClick={() => handleMonthClick(item.monthIndex, item.year)}
+          >
+            <span>{item.month}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

@@ -17,15 +17,15 @@
   transform: translateY(-50px);
 }
 
-.calendar-table.slide-up {
-  animation: slide-up 0.1s forwards;
+.calendar-table.days-slide-up {
+  animation: days-slide-up 0.1s forwards;
 }
 
-.calendar-table.slide-down {
-  animation: slide-down 0.1s forwards;
+.calendar-table.days-slide-down {
+  animation: days-slide-down 0.1s forwards;
 }
 
-@keyframes slide-up {
+@keyframes days-slide-up {
   0% {
     transform: translateY(-50px);
   }
@@ -34,7 +34,7 @@
   }
 }
 
-@keyframes slide-down {
+@keyframes days-slide-down {
   0% {
     transform: translateY(-50px);
   }
