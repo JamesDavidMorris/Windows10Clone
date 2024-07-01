@@ -58,7 +58,7 @@ To use the application, simply navigate to the provided link and explore the var
 
 ## License
 
-This project is licensed under the [Attribution-NonCommercial-NoDerivatives 4.0 International](https://creativecommons.org/licenses/by-nc-nd/4.0/).
+This project is licensed under [Attribution-NonCommercial-NoDerivatives 4.0 International](https://creativecommons.org/licenses/by-nc-nd/4.0/).
 
 ## Disclaimer
 
