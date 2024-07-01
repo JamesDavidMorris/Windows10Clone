@@ -10,9 +10,20 @@ This project serves as a demonstration of full-stack development skills, showcas
 
 You can access the running application [here](https://windows10clone.onrender.com/). This link allows you to explore all of the current features implemented of the Windows 10 Clone live.
 
+*Functionality is subject to change as the project develops.*
+
 ## Screenshot
 
 ![Screenshot of Windows 10 Clone](screenshot.png)
+
+## Project Goals
+
+- Achieve a user experience as close to the base Windows UI as possible.
+- Implement a functional and persistent file structure with an explorer.
+- Develop applications like Notepad, Calculator and Photo Viewer.
+- Create a C# Web REST API serving Swagger docs as the backend.
+- Integrate Windows UI elements such as the Control Panel and other system screens.
+- Ensure a consistent user experience across varying screen sizes.
 
 ## Planned Features
 
@@ -42,19 +53,6 @@ You can access the running application [here](https://windows10clone.onrender.co
 ### Additional Tools
 - **Render**
 - **Swagger Docs**
-
-## Project Goals
-
-- Achieve a user experience as close to the base Windows UI as possible.
-- Implement a functional and persistent file structure with an explorer.
-- Develop applications like Notepad, Calculator and Photo Viewer.
-- Create a C# Web REST API serving Swagger docs as the backend.
-- Integrate Windows UI elements such as the Control Panel and other system screens.
-- Ensure a consistent user experience across varying screen sizes.
-
-## Usage Instructions
-
-To use the application, simply navigate to the provided link and explore the various features available. Functionality is subject to change as the project develops.
 
 ## License
 
