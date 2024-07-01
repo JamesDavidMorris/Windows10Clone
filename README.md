@@ -8,9 +8,8 @@ This project serves as a demonstration of full-stack development skills, showcas
 
 ## Access the Application
 
-You can access the running application [here](https://windows10clone.onrender.com/). This link allows you to explore all of the current features implemented of the Windows 10 Clone live.
-
-*Functionality is subject to change as the project develops.*
+You can access the running application [here](https://windows10clone.onrender.com/). 
+This link allows you to explore all of the currently implemented features of the Windows 10 Clone live.
 
 ## Screenshot
 
