@@ -15,6 +15,7 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
   const yearChangedRef = useRef(false);
   const [transitionClass, setTransitionClass] = useState('');
 
+  // Handle month click to set active month and switch to day view
   const handleMonthClick = (monthIndex, year) => {
     setActiveMonth(monthIndex);
     setDisplayedYear(year);
@@ -22,6 +23,7 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
     setShowMonthsView(false);
   };
 
+  // Handle mouse wheel scrolling
   const handleWheel = (event) => {
     const delta = event.deltaY;
     const now = Date.now();
@@ -57,6 +59,7 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
     }
   };
 
+  // Add and remove wheel event listener
   useEffect(() => {
     const container = document.querySelector('.calendar-months');
     container.addEventListener('wheel', handleWheel);
@@ -66,11 +69,13 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
     };
   }, [handleWheel]);
 
+  // Adjust baseYear and startIndex to ensure the first row starts with the appropriate year from the displayed year
   useEffect(() => {
     setBaseYear(displayedYear);
     setStartIndex(0);
   }, [displayedYear]);
 
+  // Calculate the displayed months for the grid
   const getDisplayedMonths = () => {
     const displayedMonths = [];
     for (let i = -4; i < 20; i++) {  // Adjusted to add 2 extra rows, one above and one below
@@ -85,6 +90,7 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
     return displayedMonths;
   };
 
+  // Update displayedYear if the first row contains January
   useEffect(() => {
     const firstRowMonths = getDisplayedMonths().slice(4, 8); // Adjusted to the visible first row
     const lastJanuaryInFirstRow = firstRowMonths.find(item => item.month === 'Jan');

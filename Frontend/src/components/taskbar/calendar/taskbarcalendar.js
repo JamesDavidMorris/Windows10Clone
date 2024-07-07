@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import TaskbarCalendarDays from './taskbarcalendardays';
 import TaskbarCalendarMonths from './taskbarcalendarmonths';
+import TaskbarCalendarYears from './taskbarcalendaryears';
 import '../../../assets/styles/components/taskbar/calendar/taskbarcalendar.css';
 
 const ICON_TASKBAR_CALENDAR_ARROW = '/assets/images/icons/system/icon_system_arrow_1.svg';
@@ -11,11 +12,14 @@ const TaskbarCalendar = () => {
   const periodRef = useRef(null);
   const [selectedDate, setSelectedDate] = useState({ day: null, month: null, year: null });
   const [svgArrowContent, setSvgArrowContent] = useState('');
-  const [activeMonth, setActiveMonth] = useState(currentDate.getMonth());
   const [monthChangedByArrow, setMonthChangedByArrow] = useState(false);
+
+  const [activeMonth, setActiveMonth] = useState(currentDate.getMonth());
+  const [activeYear, setActiveYear] = useState(currentDate.getFullYear());
 
   const [showDaysView, setShowDaysView] = useState(true);
   const [showMonthsView, setShowMonthsView] = useState(false);
+  const [showYearsView, setShowYearsView] = useState(false);
 
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
@@ -91,6 +95,14 @@ const TaskbarCalendar = () => {
     setDisplayedYear((prevYear) => prevYear + 1);
   };
 
+  const handlePrevDecade = () => {
+    setDisplayedYear((prevYear) => prevYear - 10);
+  };
+
+  const handleNextDecade = () => {
+    setDisplayedYear((prevYear) => prevYear + 10);
+  };
+
   useEffect(() => {
     console.log('State updated. Active:', activeMonth, 'Year:', displayedYear);
   }, [activeMonth, displayedYear]);
@@ -109,13 +121,34 @@ const TaskbarCalendar = () => {
     setMonthChangedByArrow(true);
     setShowDaysView(true);
     setShowMonthsView(false);
+    setShowYearsView(false);
+  };
+
+  const handleHeaderClick = () => {
+    if (showYearsView) return;
+
+    if (showMonthsView) {
+      setShowYearsView(true);
+      setShowMonthsView(false);
+    } else {
+      setShowMonthsView(true);
+      setShowDaysView(false);
+    }
   };
 
   const formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const period = currentDate.toLocaleTimeString([], { hour12: true }).slice(-2);
   const fullDateText = currentDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-  const monthYearText = showMonthsView
+  const getCurrentYearRange = () => {
+    const rangeStart = displayedYear - (displayedYear % 10);
+    const rangeEnd = rangeStart + 9;
+    return `${rangeStart} - ${rangeEnd}`;
+  };
+
+  const monthYearText = showYearsView
+    ? getCurrentYearRange()
+    : showMonthsView
     ? `${displayedYear}`
     : new Date(displayedYear, activeMonth).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
 
@@ -134,7 +167,7 @@ const TaskbarCalendar = () => {
       </div>
       <div className="calendar-body">
         <div className="calendar-header-row">
-          <div className="calendar-header clickable" style={{ gridColumn: '1 / 3' }} onClick={() => { setShowMonthsView(true); setShowDaysView(false); }}>
+          <div className="calendar-header clickable" style={{ gridColumn: '1 / 3' }} onClick={handleHeaderClick}>
             <h3>{monthYearText}</h3>
           </div>
           <div className="calendar-arrows" style={{ gridColumn: '6 / 7' }}>
@@ -142,6 +175,12 @@ const TaskbarCalendar = () => {
               <div
                 className="calendar-arrow-up"
                 onClick={(e) => { handlePrevYear(); handleArrowClick(e); }}
+                dangerouslySetInnerHTML={{ __html: svgArrowContent }}
+              />
+            ) : showYearsView ? (
+              <div
+                className="calendar-arrow-up"
+                onClick={(e) => { handlePrevDecade(); handleArrowClick(e); }}
                 dangerouslySetInnerHTML={{ __html: svgArrowContent }}
               />
             ) : (
@@ -157,6 +196,12 @@ const TaskbarCalendar = () => {
               <div
                 className="calendar-arrow-down"
                 onClick={(e) => { handleNextYear(); handleArrowClick(e); }}
+                dangerouslySetInnerHTML={{ __html: svgArrowContent }}
+              />
+            ) : showYearsView ? (
+              <div
+                className="calendar-arrow-down"
+                onClick={(e) => { handleNextDecade(); handleArrowClick(e); }}
                 dangerouslySetInnerHTML={{ __html: svgArrowContent }}
               />
             ) : (
@@ -188,8 +233,20 @@ const TaskbarCalendar = () => {
             displayedYear={displayedYear}
             setShowDaysView={setShowDaysView}
             setShowMonthsView={setShowMonthsView}
+            setShowYearsView={setShowYearsView}
             currentYear={currentYear}
             currentMonth={currentMonth}
+          />
+        ) : null}
+        {showYearsView ? (
+          <TaskbarCalendarYears
+            setActiveYear={setActiveYear}
+            setDisplayedYear={setDisplayedYear}
+            setShowDaysView={setShowDaysView}
+            setShowMonthsView={setShowMonthsView}
+            setShowYearsView={setShowYearsView}
+            displayedYear={displayedYear}
+            currentYear={currentYear}
           />
         ) : null}
       </div>

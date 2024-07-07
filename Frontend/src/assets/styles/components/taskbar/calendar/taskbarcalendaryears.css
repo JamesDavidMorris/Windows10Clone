@@ -1,0 +1,89 @@
+.calendar-years-container {
+  overflow: hidden; /* Hide overflow to conceal extra rows */
+  height: calc(75px * 5); /* Ensure only 4 rows are visible */
+  position: relative; /* Ensure position relative for proper positioning of children */
+  margin-top: 0px;
+  margin-bottom: 26px;
+}
+
+.calendar-years {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(6, 75px); /* Set to 6 rows with fixed height */
+  gap: 10px;
+  padding: 10px;
+  background-color: #1f1f1f;
+  color: #fff;
+  transform: translateY(-60px); /* Move the grid up to hide the first extra row */
+}
+
+.calendar-year {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1f1f1f;
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  border: 2px solid transparent;
+}
+
+.calendar-year span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.calendar-year:hover {
+  outline: 2px solid grey; /* Grey border on hover */
+  z-index: 0; /* Ensure hover effect is always under selection */
+}
+
+.calendar-year.current-year {
+  outline: 2px solid #0078d4;
+  border: 2px solid #0078d4; /* Blue border for current year */
+  background-color: #0078d4; /* Background color for current year */
+  color: #fff; /* Text color for current year */
+}
+
+.calendar-year.current-year:hover {
+  outline: 2px solid #66aee7; /* Grey border on hover */
+  border: 2px solid #0078d4; /* Blue border for current year */
+  background-color: #0078d4; /* Background color for current year */
+  color: #fff; /* Text color for current year */
+}
+
+.calendar-year.current-year span {
+  color: #fff; /* Text color for current year */
+}
+
+.calendar-year.non-current-decade {
+  color: #888; /* Gray text for non-current range years */
+}
+
+.calendar-years.years-slide-up {
+  animation: slide-up 0.15s forwards;
+}
+
+.calendar-years.years-slide-down {
+  animation: slide-down 0.15s forwards;
+}
+
+@keyframes years-slide-up {
+  0% {
+    transform: translateY(-50px);
+  }
+  100% {
+    transform: translateY(25px);
+  }
+}
+
+@keyframes years-slide-down {
+  0% {
+    transform: translateY(-70px);
+  }
+  100% {
+    transform: translateY(-145px);
+  }
+}
