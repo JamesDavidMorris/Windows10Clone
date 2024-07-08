@@ -24,9 +24,10 @@ const TaskbarCalendar = () => {
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
 
-  const MIN_YEAR = currentYear - 104;
+  const MIN_YEAR = currentYear - 100;
   const MAX_YEAR = currentYear + 100;
 
+  // Update the current date every second
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentDate(new Date());
@@ -37,10 +38,12 @@ const TaskbarCalendar = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Update the position of the period indicator when the current date changes
   useEffect(() => {
     setPeriodPosition();
   }, [currentDate]);
 
+  // Fetch the SVG content for the arrow icons
   useEffect(() => {
     const fetchSVG = async () => {
       try {
@@ -54,6 +57,7 @@ const TaskbarCalendar = () => {
     fetchSVG();
   }, []);
 
+  // Set the position of the period indicator
   const setPeriodPosition = () => {
     if (periodRef.current) {
       const screenWidth = window.innerWidth;
@@ -62,10 +66,12 @@ const TaskbarCalendar = () => {
     }
   };
 
+  // Handle clicks on a day in the calendar
   const handleDayClick = (day, month, year) => {
     setSelectedDate({ day, month, year });
   };
 
+  // Handle clicks on the previous month arrow
   const handlePrevMonth = () => {
     setMonthChangedByArrow(true);
     const newMonth = activeMonth - 1;
@@ -78,6 +84,7 @@ const TaskbarCalendar = () => {
     console.log('Prev Month Clicked: ', adjustedMonth, newYear);
   };
 
+  // Handle clicks on the next month arrow
   const handleNextMonth = () => {
     setMonthChangedByArrow(true);
     const newMonth = activeMonth + 1;
@@ -90,26 +97,33 @@ const TaskbarCalendar = () => {
     console.log('Next Month Clicked: ', adjustedMonth, newYear);
   };
 
+  // Handle previous year click and update the displayed year
   const handlePrevYear = () => {
     setDisplayedYear((prevYear) => prevYear - 1);
   };
 
+  // Handle next year click and update the displayed year
   const handleNextYear = () => {
     setDisplayedYear((prevYear) => prevYear + 1);
   };
 
+  // Handle previous decade click and update the displayed year if within range
   const handlePrevDecade = () => {
-    setDisplayedYear((prevYear) => Math.max(prevYear - 10, MIN_YEAR));
+    const newDisplayedYear = displayedYear - 10;
+    const nearestValidDecade = getNearestValidDecade(newDisplayedYear);
+
+    setDisplayedYear(nearestValidDecade);
   };
 
+  // Handle next decade click and update the displayed year if within range
   const handleNextDecade = () => {
-    setDisplayedYear((prevYear) => Math.min(prevYear + 10, MAX_YEAR));
+    const newDisplayedYear = displayedYear + 10;
+    const nearestValidDecade = getNearestValidDecade(newDisplayedYear);
+
+    setDisplayedYear(nearestValidDecade);
   };
 
-  useEffect(() => {
-    console.log('State updated. Active:', activeMonth, 'Year:', displayedYear);
-  }, [activeMonth, displayedYear]);
-
+  // Handle clicks on the arrow buttons with a visual effect
   const handleArrowClick = (event) => {
     const target = event.currentTarget;
     target.classList.add('clicked');
@@ -118,6 +132,7 @@ const TaskbarCalendar = () => {
     }, 200);
   };
 
+  // Go back to the current day view
   const resetToCurrentDate = () => {
     setDisplayedYear(currentDate.getFullYear());
     setActiveMonth(currentDate.getMonth());
@@ -127,10 +142,34 @@ const TaskbarCalendar = () => {
     setShowYearsView(false);
   };
 
+  // Adjust the displayed year to the start of a decade if it out of the MIN_YEAR & MAX_YEAR range
+  const getNearestValidDecade = (year) => {
+    const decadeStartYear = year - 9;
+    const decadeEndYear = year + 9;
+
+    if (decadeStartYear < MIN_YEAR) {
+      return Math.ceil(MIN_YEAR / 10) * 10;
+    } else if (decadeEndYear > MAX_YEAR) {
+      return Math.floor((MAX_YEAR - 10) / 10) * 10;
+    }
+
+    return Math.floor(year / 10) * 10;
+  };
+
+  // Adjust the displayed year when switching to years view
+  useEffect(() => {
+    if (showYearsView) {
+      const adjustedYear = getNearestValidDecade(displayedYear);
+      setDisplayedYear(adjustedYear);
+    }
+  }, [showYearsView]);
+
+  // Handle header text click to toggle between months and years view
   const handleHeaderClick = () => {
     if (showYearsView) return;
 
     if (showMonthsView) {
+      setDisplayedYear(getNearestValidDecade(displayedYear));
       setShowYearsView(true);
       setShowMonthsView(false);
     } else {
@@ -139,16 +178,19 @@ const TaskbarCalendar = () => {
     }
   };
 
+  // Format the full date text and month/year text for the calendar header
   const formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const period = currentDate.toLocaleTimeString([], { hour12: true }).slice(-2);
   const fullDateText = currentDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
+  // Get the current decade range for display
   const getCurrentYearRange = () => {
     const rangeStart = displayedYear - (displayedYear % 10);
     const rangeEnd = rangeStart + 9;
     return `${rangeStart} - ${rangeEnd}`;
   };
 
+  // Determine the text to display in the calendar header
   const monthYearText = showYearsView
     ? getCurrentYearRange()
     : showMonthsView
@@ -239,6 +281,8 @@ const TaskbarCalendar = () => {
             setShowYearsView={setShowYearsView}
             currentYear={currentYear}
             currentMonth={currentMonth}
+            minYear={MIN_YEAR}
+            maxYear={MAX_YEAR}
           />
         ) : null}
         {showYearsView ? (

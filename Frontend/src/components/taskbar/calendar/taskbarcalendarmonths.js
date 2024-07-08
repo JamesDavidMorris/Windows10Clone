@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
 import '../../../assets/styles/components/taskbar/calendar/taskbarcalendarmonths.css';
 
-const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear, setShowDaysView, setShowMonthsView, currentYear, currentMonth }) => {
+const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear, setShowDaysView, setShowMonthsView, currentYear, currentMonth, minYear, maxYear }) => {
   const months = [
     'Jan', 'Feb', 'Mar', 'Apr',
     'May', 'Jun', 'Jul', 'Aug',
@@ -14,6 +14,9 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
   const wheelEventRef = useRef(0);
   const yearChangedRef = useRef(false);
   const [transitionClass, setTransitionClass] = useState('');
+
+  // Update maxYear to handle maximum year display correctly
+  maxYear = maxYear - 1;
 
   // Determine if a row is not visible
   const isDisabledRow = (index, length) => index < 4 || index >= length - 4;
@@ -34,25 +37,27 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
     if (now - wheelEventRef.current > 100) {
       wheelEventRef.current = now;
 
-      if (delta < 0) {
+      if (delta < 0 && !(baseYear === minYear && startIndex <= 3)) {
+        // Scrolling up, but ensure it doesn't go below minYear or show the previous year's months
         setTransitionClass('slide-up');
         setTimeout(() => {
           unstable_batchedUpdates(() => {
             setStartIndex((prev) => (prev - 4 + months.length) % months.length);
             if (startIndex <= 3) {
-              setBaseYear((prev) => prev - 1);
+              setBaseYear((prev) => Math.max(prev - 1, minYear));
               yearChangedRef.current = true;
             }
             setTransitionClass('');
           });
         }, 100);
-      } else if (delta > 0) {
+      } else if (delta > 0 && !(baseYear === maxYear && startIndex >= months.length - 4)) {
+        // Scrolling down, but ensure it doesn't go above maxYear or show the next year's months
         setTransitionClass('slide-down');
         setTimeout(() => {
           unstable_batchedUpdates(() => {
             setStartIndex((prev) => (prev + 4) % months.length);
             if (startIndex >= months.length - 4) {
-              setBaseYear((prev) => prev + 1);
+              setBaseYear((prev) => Math.min(prev + 1, maxYear));
               yearChangedRef.current = true;
             }
             setTransitionClass('');
