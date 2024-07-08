@@ -15,11 +15,13 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
   const yearChangedRef = useRef(false);
   const [transitionClass, setTransitionClass] = useState('');
 
-  // Update maxYear to handle maximum year display correctly
-  maxYear = maxYear - 1;
-
   // Determine if a row is not visible
-  const isDisabledRow = (index, length) => index < 4 || index >= length - 4;
+  const isDisabledRow = (index, length, lastRowVisible) => {
+    if (lastRowVisible) {
+      return index < 4 || index >= length;
+    }
+    return index < 4 || index >= length - 4;
+  };
 
   // Handle month click to set active month and switch to day view
   const handleMonthClick = (monthIndex, year) => {
@@ -50,19 +52,21 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
             setTransitionClass('');
           });
         }, 100);
-      } else if (delta > 0 && !(baseYear === maxYear && startIndex >= months.length - 4)) {
+      } else if (delta > 0) {
         // Scrolling down, but ensure it doesn't go above maxYear or show the next year's months
-        setTransitionClass('slide-down');
-        setTimeout(() => {
-          unstable_batchedUpdates(() => {
-            setStartIndex((prev) => (prev + 4) % months.length);
-            if (startIndex >= months.length - 4) {
-              setBaseYear((prev) => Math.min(prev + 1, maxYear));
-              yearChangedRef.current = true;
-            }
-            setTransitionClass('');
-          });
-        }, 100);
+        if (baseYear < maxYear - 1 || baseYear === maxYear - 1 && startIndex < months.length - 4) {
+          setTransitionClass('slide-down');
+          setTimeout(() => {
+            unstable_batchedUpdates(() => {
+              setStartIndex((prev) => (prev + 4) % months.length);
+              if (startIndex >= months.length - 4 && baseYear < maxYear) {
+                setBaseYear((prev) => Math.min(prev + 1, maxYear));
+                yearChangedRef.current = true;
+              }
+              setTransitionClass('');
+            });
+          }, 100);
+        }
       }
     }
   };
@@ -86,21 +90,39 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
   // Calculate the displayed months for the grid
   const getDisplayedMonths = () => {
     const displayedMonths = [];
-    for (let i = -4; i < 20; i++) {  // Adjusted to add 2 extra rows, one above and one below
+
+    // If at the max year, shift the cells down
+    let lastRowVisible = false;
+    let startingRowIndex = -4;
+    if (baseYear === maxYear)
+    {
+      startingRowIndex = -8;
+    }
+
+    for (let i = startingRowIndex; i < 20; i++) {
       const monthIndex = (startIndex + i + months.length) % months.length;
       const yearOffset = Math.floor((startIndex + i) / months.length);
+      const year = baseYear + yearOffset;
+
+      if (year === maxYear + 1) {
+        lastRowVisible = true;
+      }
+
+      if (year > maxYear) break;
+
       displayedMonths.push({
         month: months[monthIndex],
         monthIndex,
-        year: baseYear + yearOffset
+        year
       });
     }
-    return displayedMonths;
+    return { displayedMonths, lastRowVisible };
   };
 
   // Update displayedYear if the first row contains January
   useEffect(() => {
-    const firstRowMonths = getDisplayedMonths().slice(4, 8); // Adjusted to the visible first row
+    const { displayedMonths } = getDisplayedMonths();
+    const firstRowMonths = displayedMonths.slice(4, 8); // Adjusted to the visible first row
     const lastJanuaryInFirstRow = firstRowMonths.find(item => item.month === 'Jan');
 
     if (lastJanuaryInFirstRow && yearChangedRef.current) {
@@ -109,14 +131,16 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
     }
   }, [startIndex, baseYear]);
 
+  const { displayedMonths, lastRowVisible } = getDisplayedMonths();
+
   return (
     <div className="calendar-months-container">
       <div className={`calendar-months ${transitionClass}`}>
-        {getDisplayedMonths().map((item, index) => (
+        {displayedMonths.map((item, index) => (
           <div
             key={index}
-            className={`calendar-month ${item.monthIndex === currentMonth && item.year === currentYear ? 'current-month' : ''} ${item.year !== displayedYear ? 'non-current-year' : ''} ${isDisabledRow(index, getDisplayedMonths().length) ? 'disabled-row' : ''}`}
-            onClick={() => !isDisabledRow(index, getDisplayedMonths().length) && handleMonthClick(item.monthIndex, item.year)}
+            className={`calendar-month ${item.monthIndex === currentMonth && item.year === currentYear ? 'current-month' : ''} ${item.year !== displayedYear ? 'non-current-year' : ''} ${isDisabledRow(index, displayedMonths.length, lastRowVisible) ? 'disabled-row' : ''}`}
+            onClick={() => !isDisabledRow(index, displayedMonths.length, lastRowVisible) && handleMonthClick(item.monthIndex, item.year)}
           >
             <span>{item.month}</span>
           </div>

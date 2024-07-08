@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
 import '../../../assets/styles/components/taskbar/calendar/taskbarcalendardays.css';
 
-const generateCalendarWeeks = (startYear, startMonth, monthsToGenerate) => {
+const generateCalendarWeeks = (startYear, startMonth, monthsToGenerate, minYear, maxYear) => {
   const weeks = [];
 
   // Loop through the months to generate weeks
@@ -72,12 +72,15 @@ const TaskbarCalendarDays = ({
   currentDate,
   handleDayClick,
   selectedDate,
+  setSelectedDate,
   activeMonth,
   setActiveMonth,
   displayedYear,
   setDisplayedYear,
   setMonthChangedByArrow,
   monthChangedByArrow,
+  minYear,
+  maxYear
 }) => {
   const [calendarWeeks, setCalendarWeeks] = useState([]);
   const [weekIndex, setWeekIndex] = useState(0);
@@ -86,6 +89,17 @@ const TaskbarCalendarDays = ({
   const [shouldRegenerate, setShouldRegenerate] = useState(false); // Track if we should regenerate weeks
   const wheelEventRef = useRef(0);
   const tableRef = useRef(null);
+
+  // Function to set the current date as the selected date on initial render
+  useEffect(() => {
+    if (!selectedDate.day && !selectedDate.month && !selectedDate.year) {
+      setSelectedDate({
+        day: currentDate.getDate(),
+        month: currentDate.getMonth(),
+        year: currentDate.getFullYear(),
+      });
+    }
+  }, [currentDate, selectedDate, setSelectedDate]);
 
   // Determine if a row is not visible
   const isDisabledRow = (index, length) => index < 1 || index >= length - 1;
@@ -204,11 +218,19 @@ const TaskbarCalendarDays = ({
     const now = Date.now(); // Get the current timestamp
 
     // Check if the last wheel event was more than 50ms ago to debounce rapid scrolling
-    if (now - wheelEventRef.current > 50) {
+    if (now - wheelEventRef.current > 75) {
       wheelEventRef.current = now; // Update the timestamp of the last wheel event
 
       // Handle scrolling up (previous week)
       if (delta < 0 && weekIndex > 0) {
+        // Prevent scrolling into previous years before MIN_YEAR
+        const prevWeek = calendarWeeks[weekIndex - 1];
+        const lastDayInPrevWeek = prevWeek[prevWeek.length - 1];
+
+        if (lastDayInPrevWeek.year < minYear) {
+          return;
+        }
+
         setTransitionClass('days-slide-up'); // Apply the slide-up animation
 
         // After the animation completes, update the week index and reset the animation
@@ -227,9 +249,17 @@ const TaskbarCalendarDays = ({
 
             setTransitionClass('');
           });
-        }, 100);
+        }, 75);
       // Handle scrolling down (next week)
       } else if (delta > 0 && weekIndex < maxWeeks) {
+        // Prevent scrolling into next years beyond MAX_YEAR
+        const lastWeek = calendarWeeks[weekIndex + 6];
+        const lastDayInLastWeek = lastWeek[lastWeek.length - 1];
+        // If we have 6 days of the January and the 31st of December visible, prevent scrolling
+        if ((lastDayInLastWeek.year >= maxYear && lastDayInLastWeek.month === 0 && lastDayInLastWeek.day >= 13)) {
+          return;
+        }
+
         setTransitionClass('days-slide-down'); // Apply the slide-down animation
 
         // After the animation completes, update the week index and reset the animation
@@ -248,7 +278,7 @@ const TaskbarCalendarDays = ({
 
             setTransitionClass('');
           });
-        }, 100);
+        }, 75);
       }
     }
   };

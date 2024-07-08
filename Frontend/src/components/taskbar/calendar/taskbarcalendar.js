@@ -78,8 +78,10 @@ const TaskbarCalendar = () => {
     const newYear = newMonth < 0 ? displayedYear - 1 : displayedYear;
     const adjustedMonth = newMonth < 0 ? 11 : newMonth;
 
-    setActiveMonth(adjustedMonth);
-    setDisplayedYear(newYear);
+    if (newYear >= MIN_YEAR && (newYear > MIN_YEAR || adjustedMonth >= 0)) {
+      setActiveMonth(adjustedMonth);
+      setDisplayedYear(newYear);
+    }
 
     console.log('Prev Month Clicked: ', adjustedMonth, newYear);
   };
@@ -91,20 +93,26 @@ const TaskbarCalendar = () => {
     const newYear = newMonth > 11 ? displayedYear + 1 : displayedYear;
     const adjustedMonth = newMonth > 11 ? 0 : newMonth;
 
-    setActiveMonth(adjustedMonth);
-    setDisplayedYear(newYear);
+    if (newYear <= MAX_YEAR && (newYear < MAX_YEAR || adjustedMonth <= 11)) {
+      setActiveMonth(adjustedMonth);
+      setDisplayedYear(newYear);
+    }
 
     console.log('Next Month Clicked: ', adjustedMonth, newYear);
   };
 
   // Handle previous year click and update the displayed year
   const handlePrevYear = () => {
-    setDisplayedYear((prevYear) => prevYear - 1);
+    if (displayedYear > MIN_YEAR) {
+      setDisplayedYear((prevYear) => prevYear - 1);
+    }
   };
 
   // Handle next year click and update the displayed year
   const handleNextYear = () => {
-    setDisplayedYear((prevYear) => prevYear + 1);
+    if (displayedYear < MAX_YEAR) {
+      setDisplayedYear((prevYear) => prevYear + 1);
+    }
   };
 
   // Handle previous decade click and update the displayed year if within range
@@ -263,12 +271,15 @@ const TaskbarCalendar = () => {
             currentDate={currentDate}
             handleDayClick={handleDayClick}
             selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
             activeMonth={activeMonth}
             setActiveMonth={setActiveMonth}
             displayedYear={displayedYear}
             setDisplayedYear={setDisplayedYear}
             setMonthChangedByArrow={setMonthChangedByArrow}
             monthChangedByArrow={monthChangedByArrow}
+            minYear={MIN_YEAR}
+            maxYear={MAX_YEAR}
           />
         ) : null}
         {showMonthsView ? (
