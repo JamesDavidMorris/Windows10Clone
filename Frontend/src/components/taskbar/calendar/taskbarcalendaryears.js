@@ -2,12 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
 import '../../../assets/styles/components/taskbar/calendar/taskbarcalendaryears.css';
 
-const TaskbarCalendarYears = ({ setActiveYear, setDisplayedYear, displayedYear, setShowDaysView, setShowMonthsView, setShowYearsView, currentYear }) => {
+const TaskbarCalendarYears = ({ setActiveYear, setDisplayedYear, displayedYear, setShowDaysView, setShowMonthsView, setShowYearsView, currentYear, minYear, maxYear }) => {
   const [startIndex, setStartIndex] = useState(0);
   const [baseYear, setBaseYear] = useState(displayedYear);
   const wheelEventRef = useRef(0);
   const yearChangedRef = useRef(false);
   const [transitionClass, setTransitionClass] = useState('');
+
+  // Determine if a row is not visible
+  const isDisabledRow = (index, length) => index < 4 || index >= length - 8;
 
   // Handle year click to set active year and switch to month view
   const handleYearClick = (year) => {
@@ -26,22 +29,24 @@ const TaskbarCalendarYears = ({ setActiveYear, setDisplayedYear, displayedYear, 
     if (now - wheelEventRef.current > 100) {
       wheelEventRef.current = now;
 
-      if (delta < 0) {
+      if (delta < 0 && baseYear > minYear + 8) {
+        // Scrolling up, but ensure it doesn't go below minYear
         setTransitionClass('years-slide-up');
         setTimeout(() => {
           unstable_batchedUpdates(() => {
             setStartIndex((prev) => prev - 4);
-            setBaseYear((prev) => prev - 4);
+            setBaseYear((prev) => Math.max(prev - 4, minYear));
             yearChangedRef.current = true;
             setTransitionClass('');
           });
         }, 100);
-      } else if (delta > 0) {
+      } else if (delta > 0 && baseYear < maxYear - 8) {
+        // Scrolling down, but ensure it doesn't go above maxYear
         setTransitionClass('years-slide-down');
         setTimeout(() => {
           unstable_batchedUpdates(() => {
             setStartIndex((prev) => prev + 4);
-            setBaseYear((prev) => prev + 4);
+            setBaseYear((prev) => Math.min(prev + 4, maxYear));
             yearChangedRef.current = true;
             setTransitionClass('');
           });
@@ -64,7 +69,10 @@ const TaskbarCalendarYears = ({ setActiveYear, setDisplayedYear, displayedYear, 
   useEffect(() => {
     const decadeStartYear = Math.floor(displayedYear / 10) * 10;
     const offset = (displayedYear % 4) - 4;
-    setBaseYear(decadeStartYear - offset);
+    const newBaseYear = decadeStartYear - offset;
+
+    // Ensure the newBaseYear is within the valid range
+    setBaseYear(Math.max(minYear, Math.min(newBaseYear, maxYear)));
     setStartIndex(offset);
   }, [displayedYear]);
 
@@ -73,9 +81,11 @@ const TaskbarCalendarYears = ({ setActiveYear, setDisplayedYear, displayedYear, 
     const displayedYears = [];
     for (let i = -8; i < 20; i++) {  // Adjusted to add 2 extra rows, one above and one below
       const year = baseYear + i;
-      displayedYears.push({
-        year
-      });
+      if (year >= minYear && year <= maxYear) {
+        displayedYears.push({
+          year
+        });
+      }
     }
     return displayedYears;
   };
@@ -106,8 +116,8 @@ const TaskbarCalendarYears = ({ setActiveYear, setDisplayedYear, displayedYear, 
         {getDisplayedYears().map((item, index) => (
           <div
             key={index}
-            className={`calendar-year ${item.year === currentYear ? 'current-year' : ''} ${item.year >= rangeStart && item.year <= rangeEnd ? 'current-decade' : 'non-current-decade'}`}
-            onClick={() => handleYearClick(item.year)}
+            className={`calendar-year ${item.year === currentYear ? 'current-year' : ''} ${item.year >= rangeStart && item.year <= rangeEnd ? 'current-decade' : 'non-current-decade'} ${isDisabledRow(index, getDisplayedYears().length) ? 'disabled-row' : ''}`}
+            onClick={() => !isDisabledRow(index, getDisplayedYears().length) && handleYearClick(item.year)}
           >
             <span>{item.year}</span>
           </div>

@@ -62,6 +62,10 @@
   color: #888; /* Gray text for non-current range years */
 }
 
+.calendar-year.disabled-row {
+  pointer-events: none;
+}
+
 .calendar-years.years-slide-up {
   animation: slide-up 0.15s forwards;
 }

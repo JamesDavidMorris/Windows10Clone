@@ -87,6 +87,9 @@ const TaskbarCalendarDays = ({
   const wheelEventRef = useRef(0);
   const tableRef = useRef(null);
 
+  // Determine if a row is not visible
+  const isDisabledRow = (index, length) => index < 1 || index >= length - 1;
+
   // Function to update the calendar weeks based on the current year and active month
   const updateCalendarWeeks = () => {
     if (displayedYear !== undefined && activeMonth !== undefined) {
@@ -181,8 +184,15 @@ const TaskbarCalendarDays = ({
     const rows = [];
     weeksToDisplay.forEach((week, i) => {
       const cells = week.map((dayObj) => renderDay(dayObj.day, dayObj.month, dayObj.year));
-      rows.push(<tr key={i}>{cells}</tr>);
-    });
+      rows.push(
+      <tr
+        key={i}
+        className={isDisabledRow(i, weeksToDisplay.length) ? 'disabled-row' : ''}
+      >
+        {cells}
+      </tr>
+    );
+  });
 
     return rows;
   };

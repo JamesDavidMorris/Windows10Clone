@@ -62,6 +62,10 @@
   color: #888; /* Gray text for non-current year months */
 }
 
+.calendar-month.disabled-row {
+  pointer-events: none;
+}
+
 .calendar-months.slide-up {
   animation: slide-up 0.15s forwards;
 }

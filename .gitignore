@@ -131,3 +131,6 @@ dist
 
 # references folder
 Reference/
+
+# intelliJ
+.idea

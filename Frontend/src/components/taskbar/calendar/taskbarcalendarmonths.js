@@ -15,6 +15,9 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
   const yearChangedRef = useRef(false);
   const [transitionClass, setTransitionClass] = useState('');
 
+  // Determine if a row is not visible
+  const isDisabledRow = (index, length) => index < 4 || index >= length - 4;
+
   // Handle month click to set active month and switch to day view
   const handleMonthClick = (monthIndex, year) => {
     setActiveMonth(monthIndex);
@@ -107,8 +110,8 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
         {getDisplayedMonths().map((item, index) => (
           <div
             key={index}
-            className={`calendar-month ${item.monthIndex === currentMonth && item.year === currentYear ? 'current-month' : ''} ${item.year !== displayedYear ? 'non-current-year' : ''}`}
-            onClick={() => handleMonthClick(item.monthIndex, item.year)}
+            className={`calendar-month ${item.monthIndex === currentMonth && item.year === currentYear ? 'current-month' : ''} ${item.year !== displayedYear ? 'non-current-year' : ''} ${isDisabledRow(index, getDisplayedMonths().length) ? 'disabled-row' : ''}`}
+            onClick={() => !isDisabledRow(index, getDisplayedMonths().length) && handleMonthClick(item.monthIndex, item.year)}
           >
             <span>{item.month}</span>
           </div>

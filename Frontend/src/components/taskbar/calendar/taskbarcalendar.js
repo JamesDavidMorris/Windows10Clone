@@ -24,6 +24,9 @@ const TaskbarCalendar = () => {
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
 
+  const MIN_YEAR = currentYear - 104;
+  const MAX_YEAR = currentYear + 100;
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentDate(new Date());
@@ -96,11 +99,11 @@ const TaskbarCalendar = () => {
   };
 
   const handlePrevDecade = () => {
-    setDisplayedYear((prevYear) => prevYear - 10);
+    setDisplayedYear((prevYear) => Math.max(prevYear - 10, MIN_YEAR));
   };
 
   const handleNextDecade = () => {
-    setDisplayedYear((prevYear) => prevYear + 10);
+    setDisplayedYear((prevYear) => Math.min(prevYear + 10, MAX_YEAR));
   };
 
   useEffect(() => {
@@ -247,6 +250,8 @@ const TaskbarCalendar = () => {
             setShowYearsView={setShowYearsView}
             displayedYear={displayedYear}
             currentYear={currentYear}
+            minYear={MIN_YEAR}
+            maxYear={MAX_YEAR}
           />
         ) : null}
       </div>

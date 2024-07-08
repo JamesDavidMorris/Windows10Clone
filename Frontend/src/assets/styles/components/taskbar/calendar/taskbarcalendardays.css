@@ -17,6 +17,10 @@
   transform: translateY(-50px);
 }
 
+.calendar-table .disabled-row {
+  pointer-events: none;
+}
+
 .calendar-table.days-slide-up {
   animation: days-slide-up 0.1s forwards;
 }
