@@ -91,3 +91,19 @@
     transform: translateY(-145px);
   }
 }
+
+/* Transition view effects */
+.calendar-years {
+  transition: transform 0.175s ease, opacity 0.175s ease;
+}
+
+.view-year-exit {
+  transform: translateY(-70px) scale(1.2);
+  opacity: 0;
+}
+
+.view-year-enter {
+  transform: translateY(-35px) scale(1.2);
+  opacity: 0;
+}
+

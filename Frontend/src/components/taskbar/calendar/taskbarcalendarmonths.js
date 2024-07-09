@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
 import '../../../assets/styles/components/taskbar/calendar/taskbarcalendarmonths.css';
 
-const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear, setShowDaysView, setShowMonthsView, currentYear, currentMonth, minYear, maxYear }) => {
+const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear, setShowDaysView, setShowMonthsView, currentYear, currentMonth, minYear, maxYear, transitionView, setTransitionView  }) => {
   const months = [
     'Jan', 'Feb', 'Mar', 'Apr',
     'May', 'Jun', 'Jul', 'Aug',
@@ -23,12 +23,19 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
     return index < 4 || index >= length - 4;
   };
 
-  // Handle month click to set active month and switch to day view
+  // Handle month click to set active month and switch to day view with transitions
   const handleMonthClick = (monthIndex, year) => {
     setActiveMonth(monthIndex);
     setDisplayedYear(year);
-    setShowDaysView(true);
-    setShowMonthsView(false);
+    setTransitionView('view-month-enter');
+    setTimeout(() => {
+      setShowMonthsView(false);
+      setShowDaysView(true);
+      setTransitionView('view-day-enter');
+      setTimeout(() => {
+        setTransitionView('');
+      }, 100);
+    }, 100);
   };
 
   // Handle mouse wheel scrolling
@@ -135,7 +142,7 @@ const TaskbarCalendarMonths = ({ setActiveMonth, setDisplayedYear, displayedYear
 
   return (
     <div className="calendar-months-container">
-      <div className={`calendar-months ${transitionClass}`}>
+      <div className={`calendar-months ${transitionClass} ${transitionView}`}>
         {displayedMonths.map((item, index) => (
           <div
             key={index}

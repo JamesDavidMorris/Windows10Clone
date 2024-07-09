@@ -80,7 +80,8 @@ const TaskbarCalendarDays = ({
   setMonthChangedByArrow,
   monthChangedByArrow,
   minYear,
-  maxYear
+  maxYear,
+  transitionView
 }) => {
   const [calendarWeeks, setCalendarWeeks] = useState([]);
   const [weekIndex, setWeekIndex] = useState(0);
@@ -284,7 +285,7 @@ const TaskbarCalendarDays = ({
   };
 
   return (
-    <div className="calendar-grid" onWheel={handleWheel}>
+    <div className={`calendar-grid ${transitionView}`} onWheel={handleWheel}>
       <div className="calendar-table-header">
         <div>Su</div>
         <div>Mo</div>

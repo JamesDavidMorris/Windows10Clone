@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { unstable_batchedUpdates } from 'react-dom';
 import '../../../assets/styles/components/taskbar/calendar/taskbarcalendaryears.css';
 
-const TaskbarCalendarYears = ({ setActiveYear, setDisplayedYear, displayedYear, setShowDaysView, setShowMonthsView, setShowYearsView, currentYear, minYear, maxYear }) => {
+const TaskbarCalendarYears = ({ setActiveYear, setDisplayedYear, displayedYear, setShowDaysView, setShowMonthsView, setShowYearsView, currentYear, minYear, maxYear, transitionView, setTransitionView, toggleHideDisabledRows }) => {
   const [startIndex, setStartIndex] = useState(0);
   const [baseYear, setBaseYear] = useState(displayedYear);
   const wheelEventRef = useRef(0);
   const yearChangedRef = useRef(false);
   const [transitionClass, setTransitionClass] = useState('');
   const [currentYearDelayed, setCurrentYearDelayed] = useState(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Update minYear to handle minimum year display correctly
   minYear = minYear - 8;
@@ -16,13 +17,26 @@ const TaskbarCalendarYears = ({ setActiveYear, setDisplayedYear, displayedYear, 
   // Determine if a row is not visible
   const isDisabledRow = (index, length) => index < 4 || index >= 20;
 
-  // Handle year click to set active year and switch to month view
+  // Handle year click to set active year and switch to month view with transitions
   const handleYearClick = (year) => {
     setActiveYear(year);
     setDisplayedYear(year);
-    setShowDaysView(false);
-    setShowMonthsView(true);
-    setShowYearsView(false);
+    toggleHideDisabledRows(false);
+    setTransitionView('view-year-exit');
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setShowYearsView(false);
+      setShowMonthsView(true);
+      setTransitionView('view-month-exit');
+      setTimeout(() => {
+        toggleHideDisabledRows(true);
+        setTransitionView('');
+        setTimeout(() => {
+          toggleHideDisabledRows(false);
+          setIsTransitioning(false);
+        }, 250);
+      }, 50);
+    }, 150);
   };
 
   // Handle mouse wheel scrolling
@@ -30,7 +44,7 @@ const TaskbarCalendarYears = ({ setActiveYear, setDisplayedYear, displayedYear, 
     const delta = event.deltaY;
     const now = Date.now();
 
-    if (now - wheelEventRef.current > 100) {
+    if (now - wheelEventRef.current > 100 && !isTransitioning) {
       wheelEventRef.current = now;
 
       if (delta < 0 && baseYear > minYear + 8) {
@@ -71,23 +85,27 @@ const TaskbarCalendarYears = ({ setActiveYear, setDisplayedYear, displayedYear, 
 
   // Adjust baseYear and startIndex to ensure the first row starts with the appropriate year from the displayed decade
   useEffect(() => {
-    const decadeStartYear = Math.floor(displayedYear / 10) * 10;
-    const offset = (displayedYear % 4);
-    const newBaseYear = decadeStartYear - offset;
+    if (!isTransitioning) { // Prevent updates during transition
+      const decadeStartYear = Math.floor(displayedYear / 10) * 10;
+      const offset = (displayedYear % 4);
+      const newBaseYear = decadeStartYear - offset;
 
-    // Ensure the newBaseYear is within the valid range
-    setBaseYear(Math.max(minYear, Math.min(newBaseYear, maxYear)));
-    setStartIndex(-4); // Offset by one row upwards
-  }, [displayedYear]);
+      // Ensure the newBaseYear is within the valid range
+      setBaseYear(Math.max(minYear, Math.min(newBaseYear, maxYear)));
+      setStartIndex(-4); // Offset by one row upwards
+    }
+  }, [displayedYear, isTransitioning]);
 
   // Set current year delayed with a timeout to remove flicker when date cells update
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setCurrentYearDelayed(currentYear);
-    }, 1);
+    if (!isTransitioning) { // Prevent updates during transition
+      const timeout = setTimeout(() => {
+        setCurrentYearDelayed(currentYear);
+      }, 1);
 
-    return () => clearTimeout(timeout);
-  }, [currentYear]);
+      return () => clearTimeout(timeout);
+    }
+  }, [currentYear, isTransitioning]);
 
   // Calculate the displayed years for the grid
   const getDisplayedYears = () => {
@@ -114,18 +132,20 @@ const TaskbarCalendarYears = ({ setActiveYear, setDisplayedYear, displayedYear, 
 
   // Update displayedYear if the first row contains a new decade start
   useEffect(() => {
-    const firstRowYears = getDisplayedYears().slice(4, 8); // Get the first visible row
-    const firstDecadeYearInFirstRow = firstRowYears.find(item => item.year % 10 === 0);
+    if (!isTransitioning) { // Prevent updates during transition
+      const firstRowYears = getDisplayedYears().slice(4, 8); // Get the first visible row
+      const firstDecadeYearInFirstRow = firstRowYears.find(item => item.year % 10 === 0);
 
-    if (firstDecadeYearInFirstRow && yearChangedRef.current) {
-      setDisplayedYear(firstDecadeYearInFirstRow.year);
-      yearChangedRef.current = false;
+      if (firstDecadeYearInFirstRow && yearChangedRef.current) {
+        setDisplayedYear(firstDecadeYearInFirstRow.year);
+        yearChangedRef.current = false;
+      }
     }
-  }, [startIndex, baseYear]);
+  }, [startIndex, baseYear, isTransitioning]);
 
   return (
     <div className="calendar-years-container">
-      <div className={`calendar-years ${transitionClass}`}>
+      <div className={`calendar-years ${transitionClass} ${transitionView}`}>
         {getDisplayedYears().map((item, index) => (
           <div
             key={index}

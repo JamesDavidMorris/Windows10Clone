@@ -64,6 +64,11 @@
 
 .calendar-month.disabled-row {
   pointer-events: none;
+  opacity: 1;
+}
+
+.calendar-month.disabled-row.hidden {
+  opacity: 0;
 }
 
 .calendar-months.slide-up {
@@ -90,4 +95,19 @@
   100% {
     transform: translateY(-145px);
   }
+}
+
+/* Transition view effects */
+.calendar-months {
+  transition: transform 0.175s ease, opacity 0.175s ease;
+}
+
+.view-month-exit {
+  transform: translateY(-70px) scale(0.85);
+  opacity: 0;
+}
+
+.view-month-enter {
+  transform: translateY(-35px) scale(1.2);
+  opacity: 0;
 }

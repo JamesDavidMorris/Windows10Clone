@@ -24,6 +24,8 @@ const TaskbarCalendar = () => {
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
 
+  const [transitionView, setTransitionView] = useState('');
+
   const MIN_YEAR = currentYear - 100;
   const MAX_YEAR = currentYear + 100;
 
@@ -177,13 +179,40 @@ const TaskbarCalendar = () => {
     if (showYearsView) return;
 
     if (showMonthsView) {
+      toggleHideDisabledRows(true);
       setDisplayedYear(getNearestValidDecade(displayedYear));
-      setShowYearsView(true);
-      setShowMonthsView(false);
+      setTransitionView('view-month-exit');
+      setTimeout(() => {
+        setShowMonthsView(false);
+        setShowYearsView(true);
+        setTransitionView('view-year-enter');
+        setTimeout(() => {
+          toggleHideDisabledRows(false);
+          setTransitionView('');
+        }, 100);
+      }, 100);
     } else {
-      setShowMonthsView(true);
-      setShowDaysView(false);
+      setTransitionView('view-day-exit');
+      setTimeout(() => {
+        setShowDaysView(false);
+        setShowMonthsView(true);
+        setTransitionView('view-month-enter');
+        setTimeout(() => {
+          setTransitionView('');
+        }, 100);
+      }, 100);
     }
+  };
+
+  // Hide disabled rows when transitioning between calendar pages
+  const toggleHideDisabledRows = (hide) => {
+    document.querySelectorAll('.calendar-month.disabled-row').forEach(el => {
+      if (hide) {
+        el.classList.add('hidden');
+      } else {
+        el.classList.remove('hidden');
+      }
+    });
   };
 
   // Format the full date text and month/year text for the calendar header
@@ -280,6 +309,7 @@ const TaskbarCalendar = () => {
             monthChangedByArrow={monthChangedByArrow}
             minYear={MIN_YEAR}
             maxYear={MAX_YEAR}
+            transitionView={transitionView}
           />
         ) : null}
         {showMonthsView ? (
@@ -294,6 +324,8 @@ const TaskbarCalendar = () => {
             currentMonth={currentMonth}
             minYear={MIN_YEAR}
             maxYear={MAX_YEAR}
+            transitionView={transitionView}
+            setTransitionView={setTransitionView}
           />
         ) : null}
         {showYearsView ? (
@@ -307,6 +339,9 @@ const TaskbarCalendar = () => {
             currentYear={currentYear}
             minYear={MIN_YEAR}
             maxYear={MAX_YEAR}
+            transitionView={transitionView}
+            setTransitionView={setTransitionView}
+            toggleHideDisabledRows={toggleHideDisabledRows}
           />
         ) : null}
       </div>
