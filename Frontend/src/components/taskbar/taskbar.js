@@ -117,7 +117,7 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop })
   return (
     <div className="taskbar">
       <Tooltip text={tooltip.text} visible={tooltip.visible} position={tooltip.position} isClock={tooltip.isClock} />
-      {isCalendarVisible && <TaskbarCalendar />}
+      {isCalendarVisible && <TaskbarCalendar setIsCalendarVisible={setIsCalendarVisible} />}
 
       <div className="taskbar-left">
         <div

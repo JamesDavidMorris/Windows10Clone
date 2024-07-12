@@ -27,12 +27,21 @@
 }
 
 .header-icon {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
+  color: #ffffff;
+  width: 28px;
+  height: 28px;
   justify-self: center;
-  margin-top: 8px;
-  padding: 0px 25%;
+  margin-top: 5px;
+  margin-right: -5px;
+  padding: 0px 10%;
+}
+
+.header-icon:hover {
+  color: #c6c6c6;
+}
+
+.header-icon:active {
+  color: #8a8a8a;
 }
 
 .agenda-body {
@@ -57,10 +66,10 @@
   display: block;
   padding: 10px;
   background-color: #0078d4;
+  outline: 2px solid #0078d4;
   border: none;
   color: #fff;
   text-align: center;
-  cursor: pointer;
   grid-column: 2 / 3;
   width: 100%;
   box-sizing: border-box;
@@ -68,5 +77,9 @@
 }
 
 .agenda-button:hover {
-  background-color: #005a9e;
+  outline: 2px solid #66aee7;
+}
+
+.agenda-button:active {
+  outline: 0px;
 }

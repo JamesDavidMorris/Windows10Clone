@@ -2,12 +2,15 @@ import React, { useEffect, useState, useRef } from 'react';
 import TaskbarCalendarDays from './taskbarcalendardays';
 import TaskbarCalendarMonths from './taskbarcalendarmonths';
 import TaskbarCalendarYears from './taskbarcalendaryears';
-import TaskbarAgenda from './taskbaragenda';
+import TaskbarCalendarAgenda from './taskbarcalendaragenda';
 import '../../../assets/styles/components/taskbar/calendar/taskbarcalendar.css';
+
+// Context
+import { useWallpaperClickListener } from '../../../contexts/wallpaper/wallpaperclickcontext';
 
 const ICON_TASKBAR_CALENDAR_ARROW = '/assets/images/icons/system/icon_system_arrow_1.svg';
 
-const TaskbarCalendar = () => {
+const TaskbarCalendar = ({ setIsCalendarVisible }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [displayedYear, setDisplayedYear] = useState(currentDate.getFullYear());
   const periodRef = useRef(null);
@@ -233,8 +236,11 @@ const TaskbarCalendar = () => {
   };
 
   // Format the full date text and month/year text for the calendar header
-  const formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-  const period = currentDate.toLocaleTimeString([], { hour12: true }).slice(-2);
+  const hours = currentDate.getHours() % 12 || 12; // Convert to 12-hour format and handle midnight
+  const minutes = currentDate.getMinutes().toString().padStart(2, '0'); // Add leading zero if needed
+  const seconds = currentDate.getSeconds().toString().padStart(2, '0'); // Add leading zero if needed
+  const formattedTime = `${hours}:${minutes}:${seconds}`;
+  const period = currentDate.getHours() >= 12 ? 'PM' : 'AM'; // Determine AM or PM
   const fullDateText = currentDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
   // Get the current decade range for display
@@ -250,6 +256,11 @@ const TaskbarCalendar = () => {
     : showMonthsView
     ? `${displayedYear}`
     : new Date(displayedYear, activeMonth).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+
+  // Close the calendar when clicking on the wallpaper
+  useWallpaperClickListener(() => {
+    setIsCalendarVisible(false);
+  });
 
   return (
     <div className="taskbar-calendar">
@@ -362,7 +373,7 @@ const TaskbarCalendar = () => {
           />
         ) : null}
       </div>
-      <TaskbarAgenda />
+      <TaskbarCalendarAgenda setIsCalendarVisible={setIsCalendarVisible} />
     </div>
   );
 };
