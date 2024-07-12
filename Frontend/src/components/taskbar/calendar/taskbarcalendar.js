@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import TaskbarCalendarDays from './taskbarcalendardays';
 import TaskbarCalendarMonths from './taskbarcalendarmonths';
 import TaskbarCalendarYears from './taskbarcalendaryears';
+import TaskbarAgenda from './taskbaragenda';
 import '../../../assets/styles/components/taskbar/calendar/taskbarcalendar.css';
 
 const ICON_TASKBAR_CALENDAR_ARROW = '/assets/images/icons/system/icon_system_arrow_1.svg';
@@ -144,12 +145,28 @@ const TaskbarCalendar = () => {
 
   // Go back to the current day view
   const resetToCurrentDate = () => {
-    setDisplayedYear(currentDate.getFullYear());
-    setActiveMonth(currentDate.getMonth());
-    setMonthChangedByArrow(true);
-    setShowDaysView(true);
-    setShowMonthsView(false);
-    setShowYearsView(false);
+    if (showMonthsView) {
+      // Trigger the month to days transition animation
+      setTransitionView('view-month-enter');
+      setTimeout(() => {
+        setShowMonthsView(false);
+        setShowDaysView(true);
+        setTransitionView('view-day-enter');
+        setTimeout(() => {
+          setDisplayedYear(currentDate.getFullYear());
+          setActiveMonth(currentDate.getMonth());
+          setTransitionView('');
+        }, 100);
+      }, 100);
+    } else {
+      // Directly reset to the current date without animation
+      setDisplayedYear(currentDate.getFullYear());
+      setActiveMonth(currentDate.getMonth());
+      setMonthChangedByArrow(true);
+      setShowDaysView(true);
+      setShowMonthsView(false);
+      setShowYearsView(false);
+    }
   };
 
   // Adjust the displayed year to the start of a decade if it out of the MIN_YEAR & MAX_YEAR range
@@ -345,15 +362,7 @@ const TaskbarCalendar = () => {
           />
         ) : null}
       </div>
-      <div className="calendar-agenda">
-        <div className="agenda-header">
-          <h4>Today</h4>
-        </div>
-        <div className="agenda-body">
-          <p>Set up your calendars to see where you need to be</p>
-          <button className="agenda-button">Get started</button>
-        </div>
-      </div>
+      <TaskbarAgenda />
     </div>
   );
 };

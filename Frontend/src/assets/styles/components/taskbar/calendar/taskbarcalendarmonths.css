@@ -103,11 +103,11 @@
 }
 
 .view-month-exit {
-  transform: translateY(-70px) scale(0.85);
+  transform: translateY(-60px) scale(0.85);
   opacity: 0;
 }
 
 .view-month-enter {
-  transform: translateY(-35px) scale(1.2);
+  transform: translateY(-60px) scale(1.2);
   opacity: 0;
 }

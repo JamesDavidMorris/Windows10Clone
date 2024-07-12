@@ -144,34 +144,3 @@
 .calendar-table-header div {
   font-weight: 300;
 }
-
-/* Row 3 - Agenda */
-.calendar-agenda {
-  background-color: #f1f1f;
-  padding: 10px;
-  border-top: 1px solid #4c4c4c;
-  display: flex;
-  flex-direction: column;
-}
-
-.agenda-header {
-  margin-bottom: 10px;
-}
-
-.agenda-body p {
-  margin-bottom: 10px;
-}
-
-.agenda-button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  background-color: #0078d4;
-  border: none;
-  color: #fff;
-  text-align: center;
-}
-
-.agenda-button:hover {
-  background-color: #005a9e;
-}

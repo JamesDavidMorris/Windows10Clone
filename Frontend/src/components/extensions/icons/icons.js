@@ -13,6 +13,8 @@ import icon_system_tray_open from '../../../assets/images/icons/system/icon_syst
 
 // Taskbar icons
 import icon_taskbar_calender_arrow from '../../../assets/images/icons/taskbar/calendar/icon_taskbar_calender_arrow_1.png';
+import icon_taskbar_calender_calendar from '../../../assets/images/icons/taskbar/calendar/icon_taskbar_calender_calendar_1.png';
+import icon_taskbar_calender_plus from '../../../assets/images/icons/taskbar/calendar/icon_taskbar_calender_plus_1.png';
 
 // Application Icons
 import icon_application_alarm from '../../../assets/images/icons/application/icon_application_alarm_1.png';
@@ -48,6 +50,8 @@ export {
   icon_system_network_notconnected,
   icon_system_tray_open,
   icon_taskbar_calender_arrow,
+  icon_taskbar_calender_calendar,
+  icon_taskbar_calender_plus,
   icon_application_alarm,
   icon_application_calculator,
   icon_application_calendar,

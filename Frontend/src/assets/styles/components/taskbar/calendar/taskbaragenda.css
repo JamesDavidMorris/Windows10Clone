@@ -1,0 +1,72 @@
+/* Row 3 - Agenda */
+.calendar-agenda {
+  background-color: #1f1f1f;
+  padding: 20px;
+  border-top: 1px solid #4c4c4c;
+  color: #fff;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: auto auto auto 1fr;
+  gap: 15px;
+}
+
+.agenda-header {
+  display: contents;
+}
+
+.header-text {
+  font-size: 16px;
+  grid-column: 1 / 2;
+}
+
+.header-icon-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  grid-column: 3 / 4;
+}
+
+.header-icon {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  justify-self: center;
+  margin-top: 8px;
+  padding: 0px 25%;
+}
+
+.agenda-body {
+  display: contents;
+}
+
+.agenda-icon {
+  width: 24px;
+  height: 24px;
+  grid-column: 1 / 2;
+  margin-left: 8px;
+  align-self: center;
+}
+
+.agenda-body-text {
+  font-size: 14px;
+  grid-column: 2 / 3;
+  align-self: center;
+}
+
+.agenda-button {
+  display: block;
+  padding: 10px;
+  background-color: #0078d4;
+  border: none;
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+  grid-column: 2 / 3;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+}
+
+.agenda-button:hover {
+  background-color: #005a9e;
+}

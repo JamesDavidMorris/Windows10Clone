@@ -98,12 +98,12 @@
 }
 
 .view-year-exit {
-  transform: translateY(-70px) scale(1.2);
+  transform: translateY(-60px) scale(1.2);
   opacity: 0;
 }
 
 .view-year-enter {
-  transform: translateY(-35px) scale(1.2);
+  transform: translateY(-60px) scale(1.2);
   opacity: 0;
 }
 
