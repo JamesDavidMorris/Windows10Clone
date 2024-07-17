@@ -1,23 +1,11 @@
-/* src/assets/styles/components/applications/calendar/applicationcalendar.css */
-
 .application-calendar-container {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
 }
 
 .application-calendar {
-  width: 500px;
-  height: 500px;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  text-align: center;
 }

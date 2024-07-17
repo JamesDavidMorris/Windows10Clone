@@ -10,7 +10,7 @@ import '../../assets/styles/components/startmenu/startmenu.css';
 // Context
 import { useWallpaperClickListener } from '../../contexts/wallpaper/wallpaperclickcontext';
 
-const StartMenu = ({ isVisible, setIsStartMenuVisible }) => {
+const StartMenu = ({ isVisible, setIsStartMenuVisible, openApplication }) => {
   const [hoveredIcon, setHoveredIcon] = useState(null); // State to manage the hovered icon
   const [clickedTile, setClickedTile] = useState(null); // State to manage the clicked tile
   const [iconRefs, setIconRefs] = useState(null); // State to store references to icons
@@ -118,7 +118,7 @@ const StartMenu = ({ isVisible, setIsStartMenuVisible }) => {
             onMouseLeave={handleOverlayMouseLeave}
           />
           <StartMenuColumnSystem setIconRefs={setIconRefs} />
-          <StartMenuColumnApplication recentlyAddedItems={recentlyAddedItems} recentlyAddedRef={recentlyAddedRef} />
+          <StartMenuColumnApplication recentlyAddedItems={recentlyAddedItems} recentlyAddedRef={recentlyAddedRef} openApplication={openApplication} />
           <StartMenuColumnTiles handleTileClick={handleTileClick} clickedTile={clickedTile} />
           <SlidingMenu
             iconData={hoveredIcon}

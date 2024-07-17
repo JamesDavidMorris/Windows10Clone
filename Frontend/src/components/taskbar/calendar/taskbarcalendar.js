@@ -158,7 +158,7 @@ const TaskbarCalendar = ({ setIsCalendarVisible }) => {
         setDisplayedYear(currentDate.getFullYear());
         setActiveMonth(currentDate.getMonth());
         setTransitionView('view-day-enter');
-        
+
         setTimeout(() => {
           setMonthChangedByArrow(true);
           setTransitionView('');

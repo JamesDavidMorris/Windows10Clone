@@ -1,0 +1,59 @@
+.application-frame {
+  position: fixed;
+  width: calc(100%);
+  height: calc(100% - 40px); /* Subtract the taskbar height */
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  border: 0px solid #ff0000;
+  z-index: 1000;
+  overflow: auto;
+  background-size: cover;
+  background-repeat: no-repeat;
+  transition: width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease;
+}
+
+.application-frame-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2d2d2d;
+  color: #fff;
+  padding: 0.4rem;
+  z-index: 1100;
+}
+
+.application-frame-icon-title {
+  display: flex;
+  align-items: center;
+}
+
+.app-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.5rem;
+}
+
+.app-title {
+  font-size: 1rem;
+  font-weight: 300;
+}
+
+.application-frame-controls .control-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 300;
+  margin-left: 0.5rem;
+  cursor: pointer;
+}
+
+.application-frame-controls .control-button:hover {
+  color: #aaa;
+}
+
+.application-frame-content {
+  flex: 1;
+  padding: 1rem;
+}

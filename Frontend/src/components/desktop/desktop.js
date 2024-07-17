@@ -5,12 +5,29 @@ import StartMenu from '../startmenu/startmenu';
 
 // Contexts
 import { WallpaperClickProvider } from '../../contexts/wallpaper/wallpaperclickcontext';
+import { ApplicationProvider } from '../../contexts/application/applicationcontext';
 
 const DesktopContent = ({ wallpaperRef }) => {
   const [isStartMenuVisible, setIsStartMenuVisible] = useState(false);
+  const [openApplications, setOpenApplications] = useState([]);
 
   const toggleStartMenuVisibility = () => {
     setIsStartMenuVisible((prev) => !prev);
+  };
+
+  const openApplication = async (appName) => {
+    try {
+      const appComponentName = `applicationframe${appName.toLowerCase()}`;
+      console.log(`Attempting to load application: ${appComponentName}`);
+      const AppComponent = (await import(`../applications/${appName.toLowerCase()}/${appComponentName}`)).default;
+      setOpenApplications((prevApps) => [
+        ...prevApps,
+        { Component: AppComponent, key: prevApps.length }
+      ]);
+      console.log(`Loaded application: ${appName}`);
+    } catch (error) {
+      console.error(`Failed to load application ${appName}:`, error);
+    }
   };
 
   return (
@@ -25,7 +42,11 @@ const DesktopContent = ({ wallpaperRef }) => {
       <StartMenu
         isVisible={isStartMenuVisible}
         setIsStartMenuVisible={setIsStartMenuVisible}
+        openApplication={openApplication}
       />
+      {openApplications.map(({ Component, key }) => {
+        return <Component key={key} />;
+      })}
     </div>
   );
 };
@@ -33,9 +54,11 @@ const DesktopContent = ({ wallpaperRef }) => {
 const Desktop = () => {
   const wallpaperRef = useRef(null);
   return (
-    <WallpaperClickProvider wallpaperRef={wallpaperRef}>
-      <DesktopContent wallpaperRef={wallpaperRef} />
-    </WallpaperClickProvider>
+    <ApplicationProvider>
+      <WallpaperClickProvider wallpaperRef={wallpaperRef}>
+        <DesktopContent wallpaperRef={wallpaperRef} />
+      </WallpaperClickProvider>
+    </ApplicationProvider>
   );
 };
 

@@ -22,7 +22,11 @@ import {
 } from '../extensions/icons/icons';
 import '../../assets/styles/components/startmenu/startmenucolumnapplication.css';
 
-const StartMenuColumnApplication = ({ recentlyAddedItems, recentlyAddedRef  }) => {
+const StartMenuColumnApplication = ({ recentlyAddedItems, recentlyAddedRef, openApplication }) => {
+  const handleAppClick = (appName) => {
+    openApplication(appName);
+  };
+
   return (
     <div className="recently-added" ref={recentlyAddedRef}>
       {recentlyAddedItems.map((categoryItem, index) => (
@@ -33,7 +37,7 @@ const StartMenuColumnApplication = ({ recentlyAddedItems, recentlyAddedRef  }) =
             </div>
           </div>
           {categoryItem.apps.map((app, appIndex) => (
-            <div key={appIndex} className="application-hover-effect">
+            <div key={appIndex} className="application-hover-effect" onClick={() => handleAppClick(app.name)}>
               <div className="application">
                 <img src={app.icon} alt={app.name} />
                 <span>{app.name}</span>
