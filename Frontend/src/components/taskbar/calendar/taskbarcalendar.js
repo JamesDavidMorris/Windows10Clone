@@ -152,12 +152,15 @@ const TaskbarCalendar = ({ setIsCalendarVisible }) => {
       // Trigger the month to days transition animation
       setTransitionView('view-month-enter');
       setTimeout(() => {
-        setShowMonthsView(false);
         setShowDaysView(true);
+        setShowMonthsView(false);
+        setShowYearsView(false);
+        setDisplayedYear(currentDate.getFullYear());
+        setActiveMonth(currentDate.getMonth());
         setTransitionView('view-day-enter');
+        
         setTimeout(() => {
-          setDisplayedYear(currentDate.getFullYear());
-          setActiveMonth(currentDate.getMonth());
+          setMonthChangedByArrow(true);
           setTransitionView('');
         }, 100);
       }, 100);

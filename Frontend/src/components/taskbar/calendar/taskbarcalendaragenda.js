@@ -47,7 +47,7 @@ const TaskbarCalendarAgenda = ({ setIsCalendarVisible }) => {
           <div></div> {/* Empty column for alignment */}
         </div>
         <button className="agenda-button" onClick={handleCalendarClick}>
-          Show Calendar
+          Get Started
         </button>
       </div>
       {isApplicationCalendarVisible && <ApplicationCalendar />}
