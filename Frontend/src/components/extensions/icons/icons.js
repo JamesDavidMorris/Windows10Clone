@@ -10,6 +10,9 @@ import icon_system_sound_max from '../../../assets/images/icons/system/icon_syst
 import icon_system_network_connected from '../../../assets/images/icons/system/icon_system_network_connected_1.png';
 import icon_system_network_notconnected from '../../../assets/images/icons/system/icon_system_network_notconnected_1.png';
 import icon_system_tray_open from '../../../assets/images/icons/system/icon_system_tray_open_1.png';
+import icon_system_application_minimize from '../../../assets/images/icons/system/icon_system_application_minimize_1.png';
+import icon_system_application_maximize from '../../../assets/images/icons/system/icon_system_application_maximize_1.png';
+import icon_system_application_close from '../../../assets/images/icons/system/icon_system_application_close_1.png';
 
 // Taskbar icons
 import icon_taskbar_calender_arrow from '../../../assets/images/icons/taskbar/calendar/icon_taskbar_calender_arrow_1.png';
@@ -49,6 +52,9 @@ export {
   icon_system_network_connected,
   icon_system_network_notconnected,
   icon_system_tray_open,
+  icon_system_application_minimize,
+  icon_system_application_maximize,
+  icon_system_application_close,
   icon_taskbar_calender_arrow,
   icon_taskbar_calender_calendar,
   icon_taskbar_calender_plus,

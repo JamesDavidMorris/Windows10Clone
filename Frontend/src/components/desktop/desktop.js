@@ -22,12 +22,17 @@ const DesktopContent = ({ wallpaperRef }) => {
       const AppComponent = (await import(`../applications/${appName.toLowerCase()}/${appComponentName}`)).default;
       setOpenApplications((prevApps) => [
         ...prevApps,
-        { Component: AppComponent, key: prevApps.length }
+        { Component: AppComponent, key: prevApps.length, name: appName }
       ]);
       console.log(`Loaded application: ${appName}`);
     } catch (error) {
       console.error(`Failed to load application ${appName}:`, error);
     }
+  };
+
+  const closeApplication = (appName) => {
+    setOpenApplications((prevApps) => prevApps.filter(app => app.name !== appName));
+    console.log(`Closed application: ${appName}`);
   };
 
   return (
@@ -44,9 +49,11 @@ const DesktopContent = ({ wallpaperRef }) => {
         setIsStartMenuVisible={setIsStartMenuVisible}
         openApplication={openApplication}
       />
-      {openApplications.map(({ Component, key }) => {
-        return <Component key={key} />;
-      })}
+      {openApplications.map(({ Component, key, name }) => (
+        <Component key={key} onClose={() => {
+          closeApplication(name);
+        }} />
+      ))}
     </div>
   );
 };

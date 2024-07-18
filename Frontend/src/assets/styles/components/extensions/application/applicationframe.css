@@ -19,13 +19,15 @@
   align-items: center;
   background-color: #2d2d2d;
   color: #fff;
-  padding: 0.4rem;
   z-index: 1100;
+  height: 32px;
+  box-sizing: border-box;
 }
 
 .application-frame-icon-title {
   display: flex;
   align-items: center;
+  margin-left: 0.25rem;
 }
 
 .app-icon {
@@ -35,22 +37,49 @@
 }
 
 .app-title {
-  font-size: 1rem;
-  font-weight: 300;
+  font-size: 0.75rem;
+  font-weight: 350;
 }
 
-.application-frame-controls .control-button {
+.application-frame-controls {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.control-button-column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
   color: #fff;
   font-size: 1rem;
   font-weight: 300;
-  margin-left: 0.5rem;
-  cursor: pointer;
+  height: 100%;
+  width: 40px;
+  box-sizing: border-box;
 }
 
-.application-frame-controls .control-button:hover {
-  color: #aaa;
+.control-button-column img {
+  width: 10px;
+  height: 10px;
+}
+
+.control-button-column.minimize:hover {
+  background-color: var(--hover-color, #0077d7);
+}
+
+.control-button-column.maximize:hover {
+  background-color: var(--hover-color, #0077d7);
+}
+
+.control-button-column.close:hover {
+  background-color: var(--hover-color, #ea1022);
+}
+
+.control-button-disabled {
+  pointer-events: none;
 }
 
 .application-frame-content {
