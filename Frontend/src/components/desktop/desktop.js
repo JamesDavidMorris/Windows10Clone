@@ -1,15 +1,16 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import WallpaperDisplay from '../wallpaper/wallpaperdisplay';
 import Taskbar from '../taskbar/taskbar';
 import StartMenu from '../startmenu/startmenu';
 
 // Contexts
 import { WallpaperClickProvider } from '../../contexts/wallpaper/wallpaperclickcontext';
-import { ApplicationProvider } from '../../contexts/application/applicationcontext';
+import { ApplicationProvider, useApplicationContext } from '../../contexts/application/applicationcontext';
 
 const DesktopContent = ({ wallpaperRef }) => {
   const [isStartMenuVisible, setIsStartMenuVisible] = useState(false);
-  const [openApplications, setOpenApplications] = useState([]);
+  const { appState, ApplicationManager } = useApplicationContext();
+  const [, forceUpdate] = useState();
 
   const toggleStartMenuVisibility = () => {
     setIsStartMenuVisible((prev) => !prev);
@@ -20,10 +21,11 @@ const DesktopContent = ({ wallpaperRef }) => {
       const appComponentName = `applicationframe${appName.toLowerCase()}`;
       console.log(`Attempting to load application: ${appComponentName}`);
       const AppComponent = (await import(`../applications/${appName.toLowerCase()}/${appComponentName}`)).default;
-      setOpenApplications((prevApps) => [
-        ...prevApps,
-        { Component: AppComponent, key: prevApps.length, name: appName }
-      ]);
+      const appKey = `${appName.toLowerCase()}-${Date.now()}`;
+
+      ApplicationManager.openApplication({ Component: AppComponent, key: appKey, name: appName });
+      forceUpdate({});
+
       console.log(`Loaded application: ${appName}`);
     } catch (error) {
       console.error(`Failed to load application ${appName}:`, error);
@@ -31,7 +33,8 @@ const DesktopContent = ({ wallpaperRef }) => {
   };
 
   const closeApplication = (appName) => {
-    setOpenApplications((prevApps) => prevApps.filter(app => app.name !== appName));
+    ApplicationManager.closeApplication(appName);
+    forceUpdate({});
     console.log(`Closed application: ${appName}`);
   };
 
@@ -49,10 +52,8 @@ const DesktopContent = ({ wallpaperRef }) => {
         setIsStartMenuVisible={setIsStartMenuVisible}
         openApplication={openApplication}
       />
-      {openApplications.map(({ Component, key, name }) => (
-        <Component key={key} onClose={() => {
-          closeApplication(name);
-        }} />
+      {appState.map(({ Component, key, name }) => (
+        <Component key={key} onClose={() => closeApplication(name)} />
       ))}
     </div>
   );

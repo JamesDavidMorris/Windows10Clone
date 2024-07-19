@@ -12,9 +12,9 @@ import {
   icon_system_tray_open
 } from '../extensions/icons/icons';
 
-const ICON_TASKBAR_START_LOGO = '/assets/images/icons/taskbar/start/icon_taskbar_start_logo_1.svg'; // Updated path to the SVG in the public folder
+const ICON_TASKBAR_START_LOGO = '/assets/images/icons/taskbar/start/icon_taskbar_start_logo_1.svg';
 
-const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop }) => {
+const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, openApplications }) => {
   /* Start */
   const [svgContent, setSvgContent] = useState('');
 
@@ -26,7 +26,6 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop })
   /* Clock */
   const [time, setTime] = useState(new Date());
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
-
 
   /* Start */
   useEffect(() => {
@@ -51,7 +50,6 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop })
     toggleStartMenuVisibility();
     setTooltip({ visible: false, text: '', position: { top: 0, left: 0 }, isClock: false }); // Hide the tooltip
   };
-
 
   /* Tooltip */
   // Update mouse position on mouse move
@@ -83,15 +81,14 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop })
     document.removeEventListener('mousemove', handleMouseMove);
   };
 
-
   /* Clock */
   // Update the clock every second
-    useEffect(() => {
-      const timer = setInterval(() => {
-        setTime(new Date());
-      }, 1000);
-      return () => clearInterval(timer);
-    }, []);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Format the time for display on the taskbar
   const formatTime = (date) => date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
@@ -128,6 +125,11 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop })
             <div dangerouslySetInnerHTML={{ __html: svgContent }} className="start-logo" />
           </button>
         </div>
+        {openApplications && openApplications.map((app) => (
+          <button key={app.key} className="taskbar-app-button">
+            {app.name}
+          </button>
+        ))}
       </div>
       <div className="taskbar-right">
         <div className="system-tray">

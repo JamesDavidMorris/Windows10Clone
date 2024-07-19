@@ -110,3 +110,18 @@
 .clock div {
   line-height: 1.4;
 }
+
+/* Taskbar Buttons */
+.taskbar-app-button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  background: #444;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.taskbar-app-button:hover {
+  background: #555;
+}
