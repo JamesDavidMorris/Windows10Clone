@@ -23,7 +23,8 @@ const DesktopContent = ({ wallpaperRef }) => {
       const AppComponent = (await import(`../applications/${appName.toLowerCase()}/${appComponentName}`)).default;
       const appKey = `${appName.toLowerCase()}-${Date.now()}`;
 
-      ApplicationManager.openApplication({ Component: AppComponent, key: appKey, name: appName });
+      const { icon, title } = AppComponent.defaultProps;
+      ApplicationManager.openApplication({ Component: AppComponent, key: appKey, name: appName, icon, title });
       forceUpdate({});
 
       console.log(`Loaded application: ${appName}`);
@@ -38,6 +39,14 @@ const DesktopContent = ({ wallpaperRef }) => {
     console.log(`Closed application: ${appName}`);
   };
 
+  const focusApplication = (appName) => {
+    console.log(`Focusing application: ${appName}`);
+  };
+
+  useEffect(() => {
+    console.log('DesktopContent: appState updated:', appState);
+  }, [appState]);
+
   return (
     <div className="desktop" style={{ position: 'relative', width: '100%', height: '100%' }}>
       <div ref={wallpaperRef} style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -46,6 +55,7 @@ const DesktopContent = ({ wallpaperRef }) => {
       <Taskbar
         isStartMenuVisible={isStartMenuVisible}
         toggleStartMenuVisibility={toggleStartMenuVisibility}
+        focusApplication={focusApplication}
       />
       <StartMenu
         isVisible={isStartMenuVisible}

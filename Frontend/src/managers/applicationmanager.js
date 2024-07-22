@@ -21,7 +21,7 @@ class ApplicationManager {
 
   notifyListeners() {
     console.log('ApplicationManager: Notifying listeners', this.applications);
-    this.listeners.forEach(listener => listener(this.applications));
+    this.listeners.forEach(listener => listener([...this.applications]));
   }
 
   openApplication(app) {

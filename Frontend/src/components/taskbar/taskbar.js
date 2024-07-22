@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Tooltip from '../extensions/tooltip/tooltip';
 import TaskbarCalendar from './calendar/taskbarcalendar';
+import { useApplicationContext } from '../../contexts/application/applicationcontext';
 
 import '../../assets/styles/components/taskbar/taskbar.css';
 import '../../assets/styles/components/extensions/tooltip/tooltip.css';
@@ -14,7 +15,7 @@ import {
 
 const ICON_TASKBAR_START_LOGO = '/assets/images/icons/taskbar/start/icon_taskbar_start_logo_1.svg';
 
-const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, openApplications }) => {
+const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, focusApplication }) => {
   /* Start */
   const [svgContent, setSvgContent] = useState('');
 
@@ -26,6 +27,9 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, o
   /* Clock */
   const [time, setTime] = useState(new Date());
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
+
+  /* Applications */
+  const { appState } = useApplicationContext();
 
   /* Start */
   useEffect(() => {
@@ -125,9 +129,10 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, o
             <div dangerouslySetInnerHTML={{ __html: svgContent }} className="start-logo" />
           </button>
         </div>
-        {openApplications && openApplications.map((app) => (
+        {appState.map((app) => (
           <button key={app.key} className="taskbar-app-button">
-            {app.name}
+            <img src={app.icon} className="taskbar-app-icon" />
+            {app.title}
           </button>
         ))}
       </div>
