@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ApplicationManager from '../../../managers/applicationmanager';
 import '../../../assets/styles/components/extensions/application/applicationframe.css';
 
 // Import icons
@@ -9,6 +10,7 @@ import {
 } from '../../extensions/icons/icons';
 
 const ApplicationFrame = ({
+  appKey,
   icon,
   title,
   children,
@@ -22,6 +24,7 @@ const ApplicationFrame = ({
   closeButtonColor = '#d70022',
   onClose
 }) => {
+
   const frameRef = useRef(null);
 
   const calculateCenterPosition = () => {
@@ -147,12 +150,21 @@ const ApplicationFrame = ({
   const topBarStyle = { backgroundColor: topBarColor };
   const contentDisplayStyle = isMinimized ? { display: 'none' } : {};
 
+  const handleClick = (e) => {
+    // Ensure the application is still open before focusing on it
+    if (ApplicationManager.getApplications().find(app => app.key === appKey)) {
+      e.stopPropagation();
+      ApplicationManager.focusApplication(appKey);
+    }
+  };
+
   return (
     <div
       className="application-frame"
       style={frameStyle}
       ref={frameRef}
       onMouseDown={handleMouseDown}
+      onClick={handleClick}
     >
       <div
         className="application-frame-topbar"

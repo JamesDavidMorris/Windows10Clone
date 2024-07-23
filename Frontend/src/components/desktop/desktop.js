@@ -33,29 +33,30 @@ const DesktopContent = ({ wallpaperRef }) => {
     }
   };
 
-  const closeApplication = (appName) => {
-    ApplicationManager.closeApplication(appName);
+  const closeApplication = (appKey) => {
+    ApplicationManager.closeApplication(appKey);
     forceUpdate({});
-    console.log(`Closed application: ${appName}`);
+    console.log(`Closed application: ${appKey}`);
   };
 
-  const focusApplication = (appName) => {
-    console.log(`Focusing application: ${appName}`);
+  const focusApplication = (appKey) => {
+    ApplicationManager.focusApplication(appKey);
+    console.log(`Focusing application: ${appKey}`);
   };
 
-  useEffect(() => {
-    console.log('DesktopContent: appState updated:', appState);
-  }, [appState]);
+  const handleDesktopClick = () => {
+    ApplicationManager.unfocusApplication();
+    console.log('Unfocused all applications');
+  };
 
   return (
-    <div className="desktop" style={{ position: 'relative', width: '100%', height: '100%' }}>
+    <div className="desktop" style={{ position: 'relative', width: '100%', height: '100%' }} onClick={handleDesktopClick}>
       <div ref={wallpaperRef} style={{ position: 'relative', width: '100%', height: '100%' }}>
         <WallpaperDisplay />
       </div>
       <Taskbar
         isStartMenuVisible={isStartMenuVisible}
         toggleStartMenuVisibility={toggleStartMenuVisibility}
-        focusApplication={focusApplication}
       />
       <StartMenu
         isVisible={isStartMenuVisible}
@@ -63,7 +64,7 @@ const DesktopContent = ({ wallpaperRef }) => {
         openApplication={openApplication}
       />
       {appState.map(({ Component, key, name }) => (
-        <Component key={key} onClose={() => closeApplication(name)} />
+        <Component key={key} appKey={key} onClose={() => closeApplication(key)} onClick={(e) => { e.stopPropagation(); focusApplication(key); }} />
       ))}
     </div>
   );

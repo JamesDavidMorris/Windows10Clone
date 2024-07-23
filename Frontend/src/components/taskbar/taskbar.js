@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Tooltip from '../extensions/tooltip/tooltip';
 import TaskbarCalendar from './calendar/taskbarcalendar';
 import { useApplicationContext } from '../../contexts/application/applicationcontext';
+import ApplicationManager from '../../managers/applicationmanager';
 
 import '../../assets/styles/components/taskbar/taskbar.css';
 import '../../assets/styles/components/extensions/tooltip/tooltip.css';
@@ -15,7 +16,7 @@ import {
 
 const ICON_TASKBAR_START_LOGO = '/assets/images/icons/taskbar/start/icon_taskbar_start_logo_1.svg';
 
-const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, focusApplication }) => {
+const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop }) => {
   /* Start */
   const [svgContent, setSvgContent] = useState('');
 
@@ -30,6 +31,7 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, f
 
   /* Applications */
   const { appState } = useApplicationContext();
+  const [focusedApp, setFocusedApp] = useState(ApplicationManager.getFocusedApplication());
 
   /* Start */
   useEffect(() => {
@@ -115,6 +117,12 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, f
     setIsCalendarVisible((prev) => !prev);
   };
 
+  /* Applications */
+  const handleFocusApplication = (appKey) => {
+    console.log('Taskbar button clicked for app:', appKey);
+    ApplicationManager.focusApplication(appKey);
+  };
+
   return (
     <div className="taskbar">
       <Tooltip text={tooltip.text} visible={tooltip.visible} position={tooltip.position} isClock={tooltip.isClock} />
@@ -130,9 +138,16 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, f
           </button>
         </div>
         {appState.map((app) => (
-          <button key={app.key} className="taskbar-app-button">
+          <button
+            key={app.key}
+            className={`taskbar-app-button ${ApplicationManager.isFocused(app.key) ? 'focused' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log('Taskbar button clicked for app:', app.key);
+              handleFocusApplication(app.key);
+            }}
+          >
             <img src={app.icon} className="taskbar-app-icon" />
-            {app.title}
           </button>
         ))}
       </div>
