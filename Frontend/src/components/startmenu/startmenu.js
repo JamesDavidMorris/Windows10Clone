@@ -10,6 +10,9 @@ import '../../assets/styles/components/startmenu/startmenu.css';
 // Context
 import { useWallpaperClickListener } from '../../contexts/wallpaper/wallpaperclickcontext';
 
+// Manager
+import ApplicationManager from '../../managers/applicationmanager';
+
 const StartMenu = ({ isVisible, setIsStartMenuVisible, openApplication }) => {
   const [hoveredIcon, setHoveredIcon] = useState(null); // State to manage the hovered icon
   const [clickedTile, setClickedTile] = useState(null); // State to manage the clicked tile
@@ -107,6 +110,21 @@ const StartMenu = ({ isVisible, setIsStartMenuVisible, openApplication }) => {
     }
   };
 
+  // Close the start menu when an application is focused
+  useEffect(() => {
+    const handleFocusChange = (focusedAppKey) => {
+      if (focusedAppKey && isVisible) {
+        setIsStartMenuVisible(false);
+      }
+    };
+
+    ApplicationManager.addFocusListener(handleFocusChange);
+
+    return () => {
+      ApplicationManager.removeFocusListener(handleFocusChange);
+    };
+  }, [isVisible]);
+
   return (
     <>
       <PopupMenu isVisible={isVisible} toggleVisibility={toggleStartMenuVisibility} position={{ bottom: '40px', left: '0' }}>
@@ -118,8 +136,18 @@ const StartMenu = ({ isVisible, setIsStartMenuVisible, openApplication }) => {
             onMouseLeave={handleOverlayMouseLeave}
           />
           <StartMenuColumnSystem setIconRefs={setIconRefs} />
-          <StartMenuColumnApplication recentlyAddedItems={recentlyAddedItems} recentlyAddedRef={recentlyAddedRef} openApplication={openApplication} />
-          <StartMenuColumnTiles handleTileClick={handleTileClick} clickedTile={clickedTile} />
+          <StartMenuColumnApplication
+            recentlyAddedItems={recentlyAddedItems}
+            recentlyAddedRef={recentlyAddedRef}
+            openApplication={openApplication}
+            setIsStartMenuVisible={setIsStartMenuVisible}
+          />
+          <StartMenuColumnTiles
+            handleTileClick={handleTileClick}
+            clickedTile={clickedTile}
+            openApplication={openApplication}
+            setIsStartMenuVisible={setIsStartMenuVisible}
+          />
           <SlidingMenu
             iconData={hoveredIcon}
             iconRefs={iconRefs}

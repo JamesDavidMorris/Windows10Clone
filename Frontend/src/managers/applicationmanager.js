@@ -3,7 +3,7 @@ class ApplicationManager {
     this.applications = [];
     this.listeners = [];
     this.focusListeners = [];
-    this.focusedApplication = null;
+    this.focusedApplicationStack = [];
   }
 
   getApplications() {
@@ -12,8 +12,8 @@ class ApplicationManager {
   }
 
   getFocusedApplication() {
-    console.log('ApplicationManager: Focus applications', this.focusedApplication);
-    return this.focusedApplication;
+    //console.log('ApplicationManager: Focus applications', this.focusedApplicationStack[0] || null);
+    return this.focusedApplicationStack[0] || null;
   }
 
   addListener(listener) {
@@ -42,8 +42,8 @@ class ApplicationManager {
   }
 
   notifyFocusListeners() {
-    console.log('ApplicationManager: Notifying focus listeners', this.focusedApplication);
-    this.focusListeners.forEach(listener => listener(this.focusedApplication));
+    console.log('ApplicationManager: Notifying focus listeners', this.focusedApplicationStack);
+    this.focusListeners.forEach(listener => listener([...this.focusedApplicationStack]));
   }
 
   openApplication(app) {
@@ -56,24 +56,30 @@ class ApplicationManager {
   closeApplication(appKey) {
     console.log('ApplicationManager: Closing application', appKey);
     this.applications = this.applications.filter(app => app.key !== appKey);
+    this.focusedApplicationStack = this.focusedApplicationStack.filter(key => key !== appKey);
     this.notifyListeners();
-    this.unfocusApplication();
+    this.notifyFocusListeners();
   }
 
   focusApplication(appKey) {
     console.log('ApplicationManager: Focusing application', appKey);
-    this.focusedApplication = appKey;
+    this.focusedApplicationStack = [appKey, ...this.focusedApplicationStack.filter(key => key !== appKey)];
     this.notifyFocusListeners();
   }
 
   unfocusApplication() {
-    console.log('ApplicationManager: Unfocusing application', this.focusedApplication);
-    this.focusedApplication = null;
+    console.log('ApplicationManager: Unfocusing application', this.focusedApplicationStack[0] || null);
+    this.focusedApplicationStack.shift();
     this.notifyFocusListeners();
   }
 
+  getZIndex(appKey) {
+    const index = this.focusedApplicationStack.indexOf(appKey);
+    return index === -1 ? 0 : this.focusedApplicationStack.length - index;
+  }
+
   isFocused(appKey) {
-    return this.focusedApplication === appKey;
+    return this.focusedApplicationStack[0] === appKey;
   }
 }
 

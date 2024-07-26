@@ -22,9 +22,10 @@ import {
 } from '../extensions/icons/icons';
 import '../../assets/styles/components/startmenu/startmenucolumnapplication.css';
 
-const StartMenuColumnApplication = ({ recentlyAddedItems, recentlyAddedRef, openApplication }) => {
+const StartMenuColumnApplication = ({ recentlyAddedItems, recentlyAddedRef, openApplication, setIsStartMenuVisible }) => {
   const handleAppClick = (appName) => {
     openApplication(appName);
+    setIsStartMenuVisible(false);
   };
 
   return (

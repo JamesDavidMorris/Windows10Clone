@@ -137,10 +137,17 @@
   content: '';
   position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: 10%;
   height: 2px; /* Height of the blue rectangle */
   background-color: #76b9ed;
+  width: 80%;
+  transition: width 0.125s ease, left 0.125s ease;
+}
+
+.taskbar-app-button:hover::after,
+.taskbar-app-button.focused::after {
+  width: 100%;
+  left: 0;
 }
 
 .taskbar-app-icon {

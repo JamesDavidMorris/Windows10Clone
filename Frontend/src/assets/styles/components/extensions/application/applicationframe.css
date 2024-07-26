@@ -13,6 +13,10 @@
   transition: width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease;
 }
 
+.application-frame.focused {
+  z-index: 1001; /* Higher z-index for the focused application */
+}
+
 .application-frame-topbar {
   display: flex;
   justify-content: space-between;
@@ -27,7 +31,7 @@
 .application-frame-icon-title {
   display: flex;
   align-items: center;
-  margin-left: 0.25rem;
+  margin-left: 0.5rem;
 }
 
 .app-icon {

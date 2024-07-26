@@ -5,7 +5,7 @@ import { icon_taskbar_calender_calendar } from '../../extensions/icons/icons';
 
 const ICON_TASKBAR_CALENDAR_PLUS = '/assets/images/icons/taskbar/calendar/icon_taskbar_calendar_plus_1.svg';
 
-const TaskbarCalendarAgenda = ({ setIsCalendarVisible }) => {
+const TaskbarCalendarAgenda = ({ setIsCalendarVisible, openApplication }) => {
   const [svgPlusContent, setSvgPlusContent] = useState('');
   const [isApplicationCalendarVisible, setIsApplicationCalendarVisible] = useState(false);
 
@@ -24,8 +24,10 @@ const TaskbarCalendarAgenda = ({ setIsCalendarVisible }) => {
   }, []);
 
   const handleCalendarClick = () => {
+    //openApplication('Calendar');
     setIsApplicationCalendarVisible(prev => !prev);
     setIsCalendarVisible(false);
+    //setIsStartMenuVisible(false);
   };
 
   return (

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ApplicationManager from '../../../managers/applicationmanager';
 import '../../../assets/styles/components/extensions/application/applicationframe.css';
+
+// Manager
+import ApplicationManager from '../../../managers/applicationmanager';
 
 // Import icons
 import {
@@ -26,6 +28,7 @@ const ApplicationFrame = ({
 }) => {
 
   const frameRef = useRef(null);
+  const [, forceUpdate] = useState();
 
   const calculateCenterPosition = () => {
     const topPosition = (window.innerHeight - defaultHeight) / 2;
@@ -44,6 +47,7 @@ const ApplicationFrame = ({
   const [lastPosition, setLastPosition] = useState({ top: initialPosition.top, left: initialPosition.left });
   const [isDragging, setIsDragging] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const isDraggingRef = useRef(false);
   const offset = useRef({ x: 0, y: 0 });
@@ -58,6 +62,7 @@ const ApplicationFrame = ({
         y: e.clientY - top,
       };
     }
+    handleFocus();
   };
 
   // Mouse move event for dragging the application frame
@@ -145,26 +150,41 @@ const ApplicationFrame = ({
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     transition: isDragging ? 'none' : 'width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease',
+    zIndex: ApplicationManager.getZIndex(appKey)
   };
 
   const topBarStyle = { backgroundColor: topBarColor };
   const contentDisplayStyle = isMinimized ? { display: 'none' } : {};
 
-  const handleClick = (e) => {
+  // Application focus
+  const handleFocus  = () => {
     // Ensure the application is still open before focusing on it
     if (ApplicationManager.getApplications().find(app => app.key === appKey)) {
-      e.stopPropagation();
       ApplicationManager.focusApplication(appKey);
+      forceUpdate({});
     }
   };
 
+  useEffect(() => {
+    const handleFocusChange = (focusedAppStack) => {
+      setIsFocused(focusedAppStack[0] === appKey);
+      forceUpdate({});
+    };
+
+    ApplicationManager.addFocusListener(handleFocusChange);
+
+    return () => {
+      ApplicationManager.removeFocusListener(handleFocusChange);
+    };
+  }, [appKey]);
+
   return (
     <div
-      className="application-frame"
+      className={`application-frame ${isFocused ? 'focused' : ''}`}
       style={frameStyle}
       ref={frameRef}
       onMouseDown={handleMouseDown}
-      onClick={handleClick}
+      onClick={(e) => e.stopPropagation()}
     >
       <div
         className="application-frame-topbar"
@@ -172,8 +192,7 @@ const ApplicationFrame = ({
         onDoubleClick={handleDoubleClick}
       >
         <div className="application-frame-icon-title">
-          {icon && <img src={icon} alt="App Icon" className="app-icon" />}
-          <span className="app-title" style={!icon ? { marginLeft: '0.5rem' } : {}}>{title}</span>
+          <span className="app-title">{title}</span>
         </div>
         <div className={`application-frame-controls ${isTransitioning ? 'control-button-disabled' : ''}`}>
           <div

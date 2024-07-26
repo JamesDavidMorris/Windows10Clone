@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  icon_application_notepad,
+  icon_application_calendar,
   icon_application_calculator,
   icon_application_fileexplorer,
   icon_application_microsoftedge,
@@ -10,7 +10,35 @@ import {
 } from '../extensions/icons/icons';
 import '../../assets/styles/components/startmenu/startmenucolumntiles.css';
 
-const StartMenuColumnTiles = ({ handleTileClick, clickedTile }) => {
+const StartMenuColumnTiles = ({ handleTileClick, clickedTile, openApplication, setIsStartMenuVisible }) => {
+  const handleAppClick = (appName, index) => {
+    handleTileClick(index);
+    setTimeout(() => {
+      setIsStartMenuVisible(false);
+      if (appName) {
+        openApplication(appName);
+      }
+    }, 300);
+  };
+
+  const productivityTiles = [
+    { name: 'Calendar', icon: icon_application_calendar },
+    { name: 'Calculator', icon: icon_application_calculator },
+    { name: 'File Explorer', icon: icon_application_fileexplorer },
+    { name: 'Microsoft Edge', icon: icon_application_microsoftedge },
+    { name: 'Mail', icon: icon_application_mail },
+    { name: '', icon: icon_system_download }
+  ];
+
+  const exploreTiles = [
+    { name: 'Microsoft Store', icon: icon_application_microsoftstore },
+    { name: '', icon: icon_system_download },
+    { name: '', icon: icon_system_download },
+    { name: '', icon: icon_system_download },
+    { name: '', icon: icon_system_download },
+    { name: '', icon: icon_system_download }
+  ];
+
   return (
     <div className="tiles-container">
       <div className="productivity">
@@ -18,22 +46,15 @@ const StartMenuColumnTiles = ({ handleTileClick, clickedTile }) => {
           <h3>Productivity</h3>
         </div>
         <div className="blank-space">
-          {[
-            { icon: icon_application_notepad, text: 'Notepad' },
-            { icon: icon_application_calculator, text: 'Calculator' },
-            { icon: icon_application_fileexplorer, text: 'File Explorer' },
-            { icon: icon_application_microsoftedge, text: 'Microsoft Edge' },
-            { icon: icon_application_mail, text: 'Mail' },
-            { icon: icon_system_download, text: '' }
-          ].map((tile, index) => (
+          {productivityTiles.map((tile, index) => (
             <div
               key={index}
               className={`tile ${clickedTile === index ? 'click-effect' : ''}`}
-              onClick={() => handleTileClick(index)}
+              onClick={() => handleAppClick(tile.name, index)}
             >
               <div className="tile-content">
-                <img src={tile.icon} alt={tile.text} />
-                <div className="tile-text">{tile.text}</div>
+                <img src={tile.icon} alt={tile.name} />
+                <div className="tile-text">{tile.name}</div>
               </div>
             </div>
           ))}
@@ -44,22 +65,15 @@ const StartMenuColumnTiles = ({ handleTileClick, clickedTile }) => {
           <h3>Explore</h3>
         </div>
         <div className="blank-space">
-          {[
-            { icon: icon_application_microsoftstore, text: 'Microsoft Store' },
-            { icon: icon_system_download, text: '' },
-            { icon: icon_system_download, text: '' },
-            { icon: icon_system_download, text: '' },
-            { icon: icon_system_download, text: '' },
-            { icon: icon_system_download, text: '' }
-          ].map((tile, index) => (
+          {exploreTiles.map((tile, index) => (
             <div
-              key={index + 6} // Adjust index to ensure uniqueness
-              className={`tile ${clickedTile === index + 6 ? 'click-effect' : ''}`}
-              onClick={() => handleTileClick(index + 6)}
+              key={index + productivityTiles.length} // Adjust index to ensure uniqueness
+              className={`tile ${clickedTile === index + productivityTiles.length ? 'click-effect' : ''}`}
+              onClick={() => handleTileClick(index + productivityTiles.length)}
             >
               <div className="tile-content">
-                <img src={tile.icon} alt={tile.text} />
-                <div className="tile-text">{tile.text}</div>
+                <img src={tile.icon} alt={tile.name} />
+                <div className="tile-text">{tile.name}</div>
               </div>
             </div>
           ))}

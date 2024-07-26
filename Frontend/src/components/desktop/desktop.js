@@ -57,6 +57,7 @@ const DesktopContent = ({ wallpaperRef }) => {
       <Taskbar
         isStartMenuVisible={isStartMenuVisible}
         toggleStartMenuVisibility={toggleStartMenuVisibility}
+        openApplication={openApplication}
       />
       <StartMenu
         isVisible={isStartMenuVisible}

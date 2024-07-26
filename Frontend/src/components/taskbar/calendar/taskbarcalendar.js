@@ -10,7 +10,7 @@ import { useWallpaperClickListener } from '../../../contexts/wallpaper/wallpaper
 
 const ICON_TASKBAR_CALENDAR_ARROW = '/assets/images/icons/system/icon_system_arrow_1.svg';
 
-const TaskbarCalendar = ({ setIsCalendarVisible }) => {
+const TaskbarCalendar = ({ setIsCalendarVisible, openApplication }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [displayedYear, setDisplayedYear] = useState(currentDate.getFullYear());
   const periodRef = useRef(null);
@@ -376,7 +376,7 @@ const TaskbarCalendar = ({ setIsCalendarVisible }) => {
           />
         ) : null}
       </div>
-      <TaskbarCalendarAgenda setIsCalendarVisible={setIsCalendarVisible} />
+      <TaskbarCalendarAgenda setIsCalendarVisible={setIsCalendarVisible} openApplication={openApplication} />
     </div>
   );
 };

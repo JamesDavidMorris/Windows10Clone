@@ -1,11 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Tooltip from '../extensions/tooltip/tooltip';
 import TaskbarCalendar from './calendar/taskbarcalendar';
-import { useApplicationContext } from '../../contexts/application/applicationcontext';
-import ApplicationManager from '../../managers/applicationmanager';
 
 import '../../assets/styles/components/taskbar/taskbar.css';
 import '../../assets/styles/components/extensions/tooltip/tooltip.css';
+
+// Context
+import { useApplicationContext } from '../../contexts/application/applicationcontext';
+
+// Manager
+import ApplicationManager from '../../managers/applicationmanager';
 
 // Icons
 import {
@@ -16,7 +20,7 @@ import {
 
 const ICON_TASKBAR_START_LOGO = '/assets/images/icons/taskbar/start/icon_taskbar_start_logo_1.svg';
 
-const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop }) => {
+const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, openApplication }) => {
   /* Start */
   const [svgContent, setSvgContent] = useState('');
 
@@ -32,6 +36,7 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop })
   /* Applications */
   const { appState } = useApplicationContext();
   const [focusedApp, setFocusedApp] = useState(ApplicationManager.getFocusedApplication());
+  const [, forceUpdate] = useState();
 
   /* Start */
   useEffect(() => {
@@ -118,15 +123,28 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop })
   };
 
   /* Applications */
+  // Application focus
+  useEffect(() => {
+    const handleFocusChange = (focusedAppStack) => {
+      setFocusedApp(focusedAppStack[0] || null);
+    };
+
+    ApplicationManager.addFocusListener(handleFocusChange);
+    return () => {
+      ApplicationManager.removeFocusListener(handleFocusChange);
+    };
+  }, []);
+
   const handleFocusApplication = (appKey) => {
     console.log('Taskbar button clicked for app:', appKey);
     ApplicationManager.focusApplication(appKey);
+    forceUpdate({});
   };
 
   return (
     <div className="taskbar">
       <Tooltip text={tooltip.text} visible={tooltip.visible} position={tooltip.position} isClock={tooltip.isClock} />
-      {isCalendarVisible && <TaskbarCalendar setIsCalendarVisible={setIsCalendarVisible} />}
+      {isCalendarVisible && <TaskbarCalendar setIsCalendarVisible={setIsCalendarVisible} openApplication={openApplication} />}
 
       <div className="taskbar-left">
         <div
@@ -140,7 +158,7 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop })
         {appState.map((app) => (
           <button
             key={app.key}
-            className={`taskbar-app-button ${ApplicationManager.isFocused(app.key) ? 'focused' : ''}`}
+            className={`taskbar-app-button ${focusedApp === app.key ? 'focused' : ''}`}
             onClick={(e) => {
               e.stopPropagation();
               console.log('Taskbar button clicked for app:', app.key);
