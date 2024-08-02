@@ -137,6 +137,7 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, o
 
   const handleFocusApplication = (appKey) => {
     console.log('Taskbar button clicked for app:', appKey);
+    ApplicationManager.restoreApplication(appKey);
     ApplicationManager.focusApplication(appKey);
     forceUpdate({});
   };
@@ -163,6 +164,12 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, o
               e.stopPropagation();
               console.log('Taskbar button clicked for app:', app.key);
               handleFocusApplication(app.key);
+            }}
+            ref={(el) => {
+              if (el) {
+                const rect = el.getBoundingClientRect();
+                ApplicationManager.updateTaskbarPosition(app.key, { top: rect.top, left: rect.left });
+              }
             }}
           >
             <img src={app.icon} className="taskbar-app-icon" />

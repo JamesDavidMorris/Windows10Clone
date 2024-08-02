@@ -7,6 +7,7 @@ import '../../../assets/styles/components/taskbar/calendar/taskbarcalendar.css';
 
 // Context
 import { useWallpaperClickListener } from '../../../contexts/wallpaper/wallpaperclickcontext';
+import { useApplicationContext } from '../../../contexts/application/applicationcontext';
 
 const ICON_TASKBAR_CALENDAR_ARROW = '/assets/images/icons/system/icon_system_arrow_1.svg';
 
@@ -32,6 +33,8 @@ const TaskbarCalendar = ({ setIsCalendarVisible, openApplication }) => {
 
   const MIN_YEAR = currentYear - 100;
   const MAX_YEAR = currentYear + 100;
+
+  const { ApplicationManager } = useApplicationContext();
 
   // Update the current date every second
   useEffect(() => {
@@ -264,6 +267,19 @@ const TaskbarCalendar = ({ setIsCalendarVisible, openApplication }) => {
   useWallpaperClickListener(() => {
     setIsCalendarVisible(false);
   });
+
+  // Close the calendar when an application is focused
+  useEffect(() => {
+    const handleFocusChange = () => {
+      setIsCalendarVisible(false);
+    };
+
+    ApplicationManager.addFocusListener(handleFocusChange);
+
+    return () => {
+      ApplicationManager.removeFocusListener(handleFocusChange);
+    };
+  }, [ApplicationManager, setIsCalendarVisible]);
 
   return (
     <div className="taskbar-calendar">

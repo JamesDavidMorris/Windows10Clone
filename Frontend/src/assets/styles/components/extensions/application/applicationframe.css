@@ -10,11 +10,17 @@
   overflow: auto;
   background-size: cover;
   background-repeat: no-repeat;
-  transition: width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease;
+  transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease;
+  opacity: 1;
 }
 
 .application-frame.focused {
   z-index: 1001; /* Higher z-index for the focused application */
+}
+
+.application-frame.minimized {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .application-frame-topbar {

@@ -3,7 +3,10 @@ class ApplicationManager {
     this.applications = [];
     this.listeners = [];
     this.focusListeners = [];
+    this.restoreListeners = [];
     this.focusedApplicationStack = [];
+    this.minimizedApplications = new Set();
+    this.taskbarPositions = {};
   }
 
   getApplications() {
@@ -36,6 +39,16 @@ class ApplicationManager {
     console.log('ApplicationManager: Focus listener removed', listener);
   }
 
+  addRestoreListener(listener) {
+    this.restoreListeners.push(listener);
+    console.log('ApplicationManager: Restore listener added', listener);
+  }
+
+  removeRestoreListener(listener) {
+    this.restoreListeners = this.restoreListeners.filter(l => l !== listener);
+    console.log('ApplicationManager: Restore listener removed', listener);
+  }
+
   notifyListeners() {
     console.log('ApplicationManager: Notifying listeners', this.applications);
     this.listeners.forEach(listener => listener([...this.applications]));
@@ -44,6 +57,11 @@ class ApplicationManager {
   notifyFocusListeners() {
     console.log('ApplicationManager: Notifying focus listeners', this.focusedApplicationStack);
     this.focusListeners.forEach(listener => listener([...this.focusedApplicationStack]));
+  }
+
+  notifyRestoreListeners(appKey) {
+    console.log('ApplicationManager: Notifying restore listeners for app', appKey);
+    this.restoreListeners.forEach(listener => listener(appKey));
   }
 
   openApplication(app) {
@@ -63,14 +81,31 @@ class ApplicationManager {
 
   focusApplication(appKey) {
     console.log('ApplicationManager: Focusing application', appKey);
-    this.focusedApplicationStack = [appKey, ...this.focusedApplicationStack.filter(key => key !== appKey)];
+    this.focusedApplicationStack = [appKey, ...this.focusedApplicationStack.filter(key => key !== appKey && key !== null)];
     this.notifyFocusListeners();
   }
 
   unfocusApplication() {
     console.log('ApplicationManager: Unfocusing application', this.focusedApplicationStack[0] || null);
-    this.focusedApplicationStack.shift();
-    this.notifyFocusListeners();
+    if (this.focusedApplicationStack.length > 0 && this.focusedApplicationStack[0] !== null) {
+      this.focusedApplicationStack = [null, ...this.focusedApplicationStack.filter(key => key !== null)];
+      this.notifyFocusListeners();
+    }
+  }
+
+  minimizeApplication(appKey) {
+    console.log('ApplicationManager: Minimizing application', appKey);
+    this.minimizedApplications.add(appKey);
+    this.unfocusApplication();
+    this.notifyListeners();
+  }
+
+  restoreApplication(appKey) {
+    console.log('ApplicationManager: Restoring application', appKey);
+    this.minimizedApplications.delete(appKey);
+    this.notifyRestoreListeners(appKey);
+    this.focusApplication(appKey);
+    this.notifyListeners();
   }
 
   getZIndex(appKey) {
@@ -80,6 +115,14 @@ class ApplicationManager {
 
   isFocused(appKey) {
     return this.focusedApplicationStack[0] === appKey;
+  }
+
+  updateTaskbarPosition(appKey, position) {
+    this.taskbarPositions[appKey] = position;
+  }
+
+  getTaskbarPosition(appKey) {
+    return this.taskbarPositions[appKey] || { top: 0, left: 0 };
   }
 }
 

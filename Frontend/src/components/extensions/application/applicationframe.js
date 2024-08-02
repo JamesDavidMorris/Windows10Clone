@@ -48,6 +48,7 @@ const ApplicationFrame = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [taskbarPosition, setTaskbarPosition] = useState(ApplicationManager.getTaskbarPosition(appKey));
 
   const isDraggingRef = useRef(false);
   const offset = useRef({ x: 0, y: 0 });
@@ -91,10 +92,44 @@ const ApplicationFrame = ({
     };
   }, []);
 
+  // Convert taskbar button position to application frame position
+  const calculateRelativeTaskbarPosition = () => {
+    const taskbarPos = ApplicationManager.getTaskbarPosition(appKey);
+    const frameRect = frameRef.current.getBoundingClientRect();
+
+    // Calculate the center of the application frame
+    const frameCenterTop = frameRect.height / 2;
+    const frameCenterLeft = frameRect.width / 2;
+
+    return {
+      top: taskbarPos.top - frameCenterTop,
+      left: taskbarPos.left - frameCenterLeft
+    };
+  };
+
   // Handles the minimize button click
   const handleMinimize = () => {
+    // Minimize the center of the application to its taskbar button
+    const taskbarPos = calculateRelativeTaskbarPosition();
+    setTaskbarPosition(taskbarPos);
+
+    setIsTransitioning(true);
     setIsMinimized(true);
+    setTimeout(() => {
+      ApplicationManager.minimizeApplication(appKey);
+      setIsTransitioning(false);
+    }, 300); // Wait for the transition to complete
   };
+
+  // Handles the taskbar button click when minimized
+  const handleRestore = () => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setIsMinimized(false);
+      setIsTransitioning(false);
+    }, 0); // Wait for the transition to complete
+  };
+
 
   // Handles the maximize button click and manages the transition state
   const handleMaximize = () => {
@@ -141,15 +176,20 @@ const ApplicationFrame = ({
   };
 
   const frameStyle = {
+    display: isMinimized && !isTransitioning ? 'none' : 'block',
+    opacity: isMinimized ? 0 : 1,
     width: isMaximized ? '100%' : width,
     height: isMaximized ? '100%' : height,
     top: isMaximized ? 0 : top,
     left: isMaximized ? 0 : left,
+    transform: isMinimized
+      ? `translate(${taskbarPosition.left - left}px, ${taskbarPosition.top - top}px) scale(0.3)`
+      : 'translate(0, 0) scale(1)',
     backgroundColor,
     backgroundImage: `url(${backgroundImage})`,
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
-    transition: isDragging ? 'none' : 'width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease',
+    transition: isDragging ? 'none' : 'opacity 0.3s ease, transform 0.3s ease, width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease',
     zIndex: ApplicationManager.getZIndex(appKey)
   };
 
@@ -157,7 +197,7 @@ const ApplicationFrame = ({
   const contentDisplayStyle = isMinimized ? { display: 'none' } : {};
 
   // Application focus
-  const handleFocus  = () => {
+  const handleFocus = () => {
     // Ensure the application is still open before focusing on it
     if (ApplicationManager.getApplications().find(app => app.key === appKey)) {
       ApplicationManager.focusApplication(appKey);
@@ -171,16 +211,24 @@ const ApplicationFrame = ({
       forceUpdate({});
     };
 
+    const handleRestoreMinimized = (key) => {
+      if (key === appKey) {
+        handleRestore();
+      }
+    };
+
     ApplicationManager.addFocusListener(handleFocusChange);
+    ApplicationManager.addRestoreListener(handleRestoreMinimized);
 
     return () => {
       ApplicationManager.removeFocusListener(handleFocusChange);
+      ApplicationManager.removeRestoreListener(handleRestoreMinimized);
     };
   }, [appKey]);
 
   return (
     <div
-      className={`application-frame ${isFocused ? 'focused' : ''}`}
+      className={`application-frame ${isFocused ? 'focused' : ''} ${isMinimized ? 'minimized' : ''}`}
       style={frameStyle}
       ref={frameRef}
       onMouseDown={handleMouseDown}
