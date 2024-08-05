@@ -20,8 +20,33 @@ export const ApplicationProvider = ({ children }) => {
     };
   }, []);
 
+  const openApplication = async (appName) => {
+    try {
+      const appComponentName = `applicationframe${appName.toLowerCase()}`;
+      const importPath = `../../components/applications/${appName.toLowerCase()}/${appComponentName}.js`;
+      console.log(`Attempting to load application from path: ${importPath}`);
+
+      const AppComponent = (await import(
+        /* webpackMode: "lazy" */
+        `../../components/applications/${appName.toLowerCase()}/${appComponentName}`
+      )).default;
+
+      if (!AppComponent) {
+        throw new Error(`Failed to load component for application: ${appName}`);
+      }
+
+      const appKey = `${appName.toLowerCase()}-${Date.now()}`;
+      const { icon, title } = AppComponent.defaultProps;
+      ApplicationManager.openApplication({ Component: AppComponent, key: appKey, name: appName, icon, title });
+
+      console.log(`Loaded application: ${appName}`);
+    } catch (error) {
+      console.error(`Failed to load application ${appName}:`, error);
+    }
+  };
+
   return (
-    <ApplicationContext.Provider value={{ appState, ApplicationManager }}>
+    <ApplicationContext.Provider value={{ appState, ApplicationManager, openApplication }}>
       {children}
     </ApplicationContext.Provider>
   );

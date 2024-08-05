@@ -9,9 +9,7 @@ import '../../assets/styles/components/startmenu/startmenu.css';
 
 // Context
 import { useWallpaperClickListener } from '../../contexts/wallpaper/wallpaperclickcontext';
-
-// Manager
-import ApplicationManager from '../../managers/applicationmanager';
+import { useApplicationContext } from '../../contexts/application/applicationcontext';
 
 const StartMenu = ({ isVisible, setIsStartMenuVisible, openApplication }) => {
   const [hoveredIcon, setHoveredIcon] = useState(null); // State to manage the hovered icon
@@ -24,6 +22,8 @@ const StartMenu = ({ isVisible, setIsStartMenuVisible, openApplication }) => {
   const leftColumnRef = useRef(null); // Reference for the left column
   const slidingMenuRef = useRef(null); // Reference for the sliding menu
   const recentlyAddedRef = useRef(null); // Reference for the recently added section
+
+  const { ApplicationManager } = useApplicationContext();
 
   // Effect to handle mouse movements for showing/hiding the sliding menu
   useEffect(() => {

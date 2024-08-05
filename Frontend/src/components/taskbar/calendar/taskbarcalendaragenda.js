@@ -3,10 +3,14 @@ import ApplicationCalendar from '../../applications/calendar/applicationcalendar
 import '../../../assets/styles/components/taskbar/calendar/taskbarcalendaragenda.css';
 import { icon_taskbar_calender_calendar } from '../../extensions/icons/icons';
 
+// Context
+import { useApplicationContext } from '../../../contexts/application/applicationcontext';
+
 const ICON_TASKBAR_CALENDAR_PLUS = '/assets/images/icons/taskbar/calendar/icon_taskbar_calendar_plus_1.svg';
 
-const TaskbarCalendarAgenda = ({ setIsCalendarVisible, openApplication }) => {
+const TaskbarCalendarAgenda = ({ setIsCalendarVisible }) => {
   const [svgPlusContent, setSvgPlusContent] = useState('');
+  const { openApplication } = useApplicationContext();
   const [isApplicationCalendarVisible, setIsApplicationCalendarVisible] = useState(false);
 
   // Fetch the SVG content for the plus icon
@@ -24,10 +28,9 @@ const TaskbarCalendarAgenda = ({ setIsCalendarVisible, openApplication }) => {
   }, []);
 
   const handleCalendarClick = () => {
-    //openApplication('Calendar');
+    openApplication('Calendar');
     setIsApplicationCalendarVisible(prev => !prev);
     setIsCalendarVisible(false);
-    //setIsStartMenuVisible(false);
   };
 
   return (

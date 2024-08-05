@@ -8,9 +8,6 @@ import '../../assets/styles/components/extensions/tooltip/tooltip.css';
 // Context
 import { useApplicationContext } from '../../contexts/application/applicationcontext';
 
-// Manager
-import ApplicationManager from '../../managers/applicationmanager';
-
 // Icons
 import {
   icon_system_sound_max,
@@ -20,7 +17,7 @@ import {
 
 const ICON_TASKBAR_START_LOGO = '/assets/images/icons/taskbar/start/icon_taskbar_start_logo_1.svg';
 
-const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, openApplication }) => {
+const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop }) => {
   /* Start */
   const [svgContent, setSvgContent] = useState('');
 
@@ -34,7 +31,7 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, o
   const [isCalendarVisible, setIsCalendarVisible] = useState(false);
 
   /* Applications */
-  const { appState } = useApplicationContext();
+  const { appState, ApplicationManager } = useApplicationContext();
   const [focusedApp, setFocusedApp] = useState(ApplicationManager.getFocusedApplication());
   const [, forceUpdate] = useState();
 
@@ -145,7 +142,7 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop, o
   return (
     <div className="taskbar">
       <Tooltip text={tooltip.text} visible={tooltip.visible} position={tooltip.position} isClock={tooltip.isClock} />
-      {isCalendarVisible && <TaskbarCalendar setIsCalendarVisible={setIsCalendarVisible} openApplication={openApplication} />}
+      {isCalendarVisible && <TaskbarCalendar setIsCalendarVisible={setIsCalendarVisible} />}
 
       <div className="taskbar-left">
         <div

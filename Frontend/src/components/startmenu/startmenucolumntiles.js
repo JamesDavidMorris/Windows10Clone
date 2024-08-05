@@ -10,7 +10,12 @@ import {
 } from '../extensions/icons/icons';
 import '../../assets/styles/components/startmenu/startmenucolumntiles.css';
 
-const StartMenuColumnTiles = ({ handleTileClick, clickedTile, openApplication, setIsStartMenuVisible }) => {
+// Context
+import { useApplicationContext } from '../../contexts/application/applicationcontext';
+
+const StartMenuColumnTiles = ({ handleTileClick, clickedTile, setIsStartMenuVisible }) => {
+  const { openApplication } = useApplicationContext();
+
   const handleAppClick = (appName, index) => {
     handleTileClick(index);
     setTimeout(() => {

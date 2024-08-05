@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import WallpaperDisplay from '../wallpaper/wallpaperdisplay';
 import Taskbar from '../taskbar/taskbar';
 import StartMenu from '../startmenu/startmenu';
@@ -9,28 +9,11 @@ import { ApplicationProvider, useApplicationContext } from '../../contexts/appli
 
 const DesktopContent = ({ wallpaperRef }) => {
   const [isStartMenuVisible, setIsStartMenuVisible] = useState(false);
-  const { appState, ApplicationManager } = useApplicationContext();
+  const { appState, ApplicationManager, openApplication } = useApplicationContext();
   const [, forceUpdate] = useState();
 
   const toggleStartMenuVisibility = () => {
     setIsStartMenuVisible((prev) => !prev);
-  };
-
-  const openApplication = async (appName) => {
-    try {
-      const appComponentName = `applicationframe${appName.toLowerCase()}`;
-      console.log(`Attempting to load application: ${appComponentName}`);
-      const AppComponent = (await import(`../applications/${appName.toLowerCase()}/${appComponentName}`)).default;
-      const appKey = `${appName.toLowerCase()}-${Date.now()}`;
-
-      const { icon, title } = AppComponent.defaultProps;
-      ApplicationManager.openApplication({ Component: AppComponent, key: appKey, name: appName, icon, title });
-      forceUpdate({});
-
-      console.log(`Loaded application: ${appName}`);
-    } catch (error) {
-      console.error(`Failed to load application ${appName}:`, error);
-    }
   };
 
   const closeApplication = (appKey) => {
@@ -57,12 +40,10 @@ const DesktopContent = ({ wallpaperRef }) => {
       <Taskbar
         isStartMenuVisible={isStartMenuVisible}
         toggleStartMenuVisibility={toggleStartMenuVisibility}
-        openApplication={openApplication}
       />
       <StartMenu
         isVisible={isStartMenuVisible}
         setIsStartMenuVisible={setIsStartMenuVisible}
-        openApplication={openApplication}
       />
       {appState.map(({ Component, key, name }) => (
         <Component key={key} appKey={key} onClose={() => closeApplication(key)} onClick={(e) => { e.stopPropagation(); focusApplication(key); }} />

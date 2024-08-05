@@ -67,8 +67,8 @@ class ApplicationManager {
   openApplication(app) {
     console.log('ApplicationManager: Opening application', app);
     this.applications.push(app);
-    this.notifyListeners();
     this.focusApplication(app.key);
+    this.notifyListeners();
   }
 
   closeApplication(appKey) {

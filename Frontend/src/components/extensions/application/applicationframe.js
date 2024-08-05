@@ -45,17 +45,35 @@ const ApplicationFrame = ({
   const [top, setTop] = useState(initialPosition.top);
   const [left, setLeft] = useState(initialPosition.left);
   const [lastPosition, setLastPosition] = useState({ top: initialPosition.top, left: initialPosition.left });
+  const [lastSize, setLastSize] = useState({ width: defaultWidth, height: defaultHeight });
   const [isDragging, setIsDragging] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [taskbarPosition, setTaskbarPosition] = useState(ApplicationManager.getTaskbarPosition(appKey));
 
   const isDraggingRef = useRef(false);
+  const isResizingRef = useRef(false);
   const offset = useRef({ x: 0, y: 0 });
+  const initialSize = useRef({ width: defaultWidth, height: defaultHeight });
+  const resizeDirection = useRef('');
 
-  // Mouse down event for dragging the application frame
+  // Mouse down event for dragging or resizing the application frame
   const handleMouseDown = (e) => {
-    if (e.target.closest('.application-frame-topbar')) {
+    const resizer = e.target.closest('.resizer');
+    if (resizer) {
+      isResizingRef.current = true;
+      resizeDirection.current = resizer.dataset.direction;
+      offset.current = {
+        x: e.clientX,
+        y: e.clientY,
+      };
+      initialSize.current = {
+        width,
+        height,
+        top,
+        left,
+      };
+    } else if (e.target.closest('.application-frame-topbar')) {
       isDraggingRef.current = true;
       setIsDragging(true);
       offset.current = {
@@ -66,20 +84,116 @@ const ApplicationFrame = ({
     handleFocus();
   };
 
-  // Mouse move event for dragging the application frame
+  // Mouse move event for dragging or resizing the application frame
   const handleMouseMove = (e) => {
     if (isDraggingRef.current) {
       const newLeft = e.clientX - offset.current.x;
       const newTop = e.clientY - offset.current.y;
       setLeft(newLeft);
       setTop(newTop);
+    } else if (isResizingRef.current) {
+      const deltaX = e.clientX - offset.current.x;
+      const deltaY = e.clientY - offset.current.y;
+
+      // Check if the cursor is within bounds, disengage resizing if it exits
+      if (e.clientX < 0 || e.clientY < 0 || e.clientX > window.innerWidth || e.clientY > window.innerHeight - 40) {
+        handleMouseUp();
+        return;
+      }
+
+      switch (resizeDirection.current) {
+        case 'right':
+          setWidth(Math.max(defaultWidth, initialSize.current.width + deltaX));
+          break;
+        case 'bottom':
+          setHeight(Math.max(defaultHeight, initialSize.current.height + deltaY));
+          break;
+        case 'bottom-right':
+          setWidth(Math.max(defaultWidth, initialSize.current.width + deltaX));
+          setHeight(Math.max(defaultHeight, initialSize.current.height + deltaY));
+          break;
+        case 'left':
+          const newWidthLeft = Math.max(defaultWidth, initialSize.current.width - deltaX);
+          const newLeftPos = initialSize.current.left + deltaX;
+
+          if (newWidthLeft === defaultWidth) {
+            setLeft(initialSize.current.left + (initialSize.current.width - defaultWidth));
+          } else {
+            setLeft(newLeftPos);
+          }
+
+          setWidth(newWidthLeft);
+          break;
+        case 'top':
+          const newHeightTop = Math.max(defaultHeight, initialSize.current.height - deltaY);
+          const newTopPos = initialSize.current.top + deltaY;
+
+          if (newHeightTop === defaultHeight) {
+            setTop(initialSize.current.top + (initialSize.current.height - defaultHeight));
+          } else {
+            setTop(newTopPos);
+          }
+
+          setHeight(newHeightTop);
+          break;
+        case 'top-left':
+          const newWidthTopLeft = Math.max(defaultWidth, initialSize.current.width - deltaX);
+          const newHeightTopLeft = Math.max(defaultHeight, initialSize.current.height - deltaY);
+          const newLeftPosTopLeft = initialSize.current.left + deltaX;
+          const newTopPosTopLeft = initialSize.current.top + deltaY;
+
+          if (newWidthTopLeft === defaultWidth) {
+            setLeft(initialSize.current.left + (initialSize.current.width - defaultWidth));
+          } else {
+            setLeft(newLeftPosTopLeft);
+          }
+
+          if (newHeightTopLeft === defaultHeight) {
+            setTop(initialSize.current.top + (initialSize.current.height - defaultHeight));
+          } else {
+            setTop(newTopPosTopLeft);
+          }
+
+          setWidth(newWidthTopLeft);
+          setHeight(newHeightTopLeft);
+          break;
+        case 'top-right':
+          setWidth(Math.max(defaultWidth, initialSize.current.width + deltaX));
+          const newHeightTopRight = Math.max(defaultHeight, initialSize.current.height - deltaY);
+          const newTopPosTopRight = initialSize.current.top + deltaY;
+
+          if (newHeightTopRight === defaultHeight) {
+            setTop(initialSize.current.top + (initialSize.current.height - defaultHeight));
+          } else {
+            setTop(newTopPosTopRight);
+          }
+
+          setHeight(newHeightTopRight);
+          break;
+        case 'bottom-left':
+          const newWidthBottomLeft = Math.max(defaultWidth, initialSize.current.width - deltaX);
+          const newLeftPosBottomLeft = initialSize.current.left + deltaX;
+
+          if (newWidthBottomLeft === defaultWidth) {
+            setLeft(initialSize.current.left + (initialSize.current.width - defaultWidth));
+          } else {
+            setLeft(newLeftPosBottomLeft);
+          }
+
+          setWidth(newWidthBottomLeft);
+          setHeight(Math.max(defaultHeight, initialSize.current.height + deltaY));
+          break;
+        default:
+          break;
+      }
     }
   };
 
-  // Mouse up event to stop dragging the application frame
+  // Mouse up event to stop dragging or resizing the application frame
   const handleMouseUp = () => {
     isDraggingRef.current = false;
     setIsDragging(false);
+    isResizingRef.current = false;
   };
 
   useEffect(() => {
@@ -135,12 +249,13 @@ const ApplicationFrame = ({
   const handleMaximize = () => {
     setIsTransitioning(true);
     if (isMaximized) {
-      setWidth(defaultWidth);
-      setHeight(defaultHeight);
+      setWidth(lastSize.width);
+      setHeight(lastSize.height);
       setTop(lastPosition.top);
       setLeft(lastPosition.left);
     } else {
       setLastPosition({ top, left });
+      setLastSize({ width, height });
       setTop(0);
       setLeft(0);
       setWidth(window.innerWidth);
@@ -189,7 +304,7 @@ const ApplicationFrame = ({
     backgroundImage: `url(${backgroundImage})`,
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
-    transition: isDragging ? 'none' : 'opacity 0.3s ease, transform 0.3s ease, width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease',
+    transition: isDragging || isResizingRef.current ? 'none' : 'opacity 0.3s ease, transform 0.3s ease, width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease',
     zIndex: ApplicationManager.getZIndex(appKey)
   };
 
@@ -269,6 +384,14 @@ const ApplicationFrame = ({
       <div className="application-frame-content" style={contentDisplayStyle}>
         {children}
       </div>
+      <div className="resizer top" data-direction="top" />
+      <div className="resizer right" data-direction="right" />
+      <div className="resizer bottom" data-direction="bottom" />
+      <div className="resizer left" data-direction="left" />
+      <div className="resizer top-left" data-direction="top-left" />
+      <div className="resizer top-right" data-direction="top-right" />
+      <div className="resizer bottom-left" data-direction="bottom-left" />
+      <div className="resizer bottom-right" data-direction="bottom-right" />
     </div>
   );
 };
