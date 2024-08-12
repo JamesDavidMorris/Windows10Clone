@@ -134,8 +134,18 @@ const Taskbar = ({ isStartMenuVisible, toggleStartMenuVisibility, scrollToTop })
 
   const handleFocusApplication = (appKey) => {
     console.log('Taskbar button clicked for app:', appKey);
-    ApplicationManager.restoreApplication(appKey);
-    ApplicationManager.focusApplication(appKey);
+    const isFocused = ApplicationManager.isFocused(appKey);
+
+    // If the application is currently focused, minimize it
+    if (isFocused) {
+      ApplicationManager.minimizeApplication(appKey);
+    }
+    // Otherwise, restore the application and bring it to focus
+    else {
+      ApplicationManager.restoreApplication(appKey);
+      ApplicationManager.focusApplication(appKey);
+    }
+
     forceUpdate({});
   };
 

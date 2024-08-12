@@ -74,7 +74,7 @@ class ApplicationManager {
   closeApplication(appKey) {
     console.log('ApplicationManager: Closing application', appKey);
     this.applications = this.applications.filter(app => app.key !== appKey);
-    this.focusedApplicationStack = this.focusedApplicationStack.filter(key => key !== appKey);
+    this.focusedApplicationStack = [null, ...this.focusedApplicationStack.filter(key => key !== null)];
     this.notifyListeners();
     this.notifyFocusListeners();
   }

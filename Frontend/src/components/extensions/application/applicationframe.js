@@ -244,6 +244,26 @@ const ApplicationFrame = ({
     }, 0); // Wait for the transition to complete
   };
 
+  // Synchronise the minimized state based on application manager events
+  useEffect(() => {
+      const handleStateChange = () => {
+          const isCurrentlyMinimized = ApplicationManager.minimizedApplications.has(appKey);
+
+          if (isMinimized !== isCurrentlyMinimized) {
+              if (isCurrentlyMinimized) {
+                  handleMinimize();  // Trigger the minimize transition
+              } else {
+                  handleRestore();   // Trigger the restore transition
+              }
+          }
+      };
+
+      ApplicationManager.addListener(handleStateChange);
+
+      return () => {
+          ApplicationManager.removeListener(handleStateChange);
+      };
+  }, [appKey, isMinimized]);
 
   // Handles the maximize button click and manages the transition state
   const handleMaximize = () => {
