@@ -75,7 +75,7 @@ const ApplicationCalendar = () => {
             </div>
             <div className="calendar-divider"></div>
             <div className="calendar-go-to">
-              <a href="#">Go to calendar</a>
+              <a>Go to calendar</a>
             </div>
           </div>
         </div>
@@ -90,7 +90,7 @@ const ApplicationCalendar = () => {
           <p className="error-title">You’ll need the Internet for this.</p>
           <p className="error-message">It doesn’t look like you’re connected to the Internet. Check your connection and try again.</p>
           <p className="error-code">0x800713AB</p>
-          <a href="#" className="error-feedback">Send feedback</a>
+          <a className="error-feedback">Send feedback</a>
           <button className="cancel-button" onClick={handleCancelClick}>Cancel</button>
         </div>
       )}
